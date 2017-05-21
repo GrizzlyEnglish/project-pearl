@@ -36,8 +36,8 @@ public class BoardCamera extends GameCamera {
         gameCamera.update();
     }
 
-    private void translateCamera(Vector3 coords){
-        gameCamera.translate(coords);
+    private void translateCamera(Vector3 cords){
+        gameCamera.translate(cords);
         gameCamera.update();
     }
 }

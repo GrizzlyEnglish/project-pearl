@@ -42,6 +42,10 @@ public abstract class GameCamera {
         gameCamera.update();
     }
 
+    public Vector3 unprojectCords(Vector3 cords){
+        return gameCamera.unproject(cords);
+    }
+
     private void setWorldBounds(float left_x, float bottom_y, float width, float height){
         worldBounds = new Rectangle(left_x, bottom_y, width, height);
     }

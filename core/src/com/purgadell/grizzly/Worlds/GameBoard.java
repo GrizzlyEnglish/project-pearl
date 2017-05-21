@@ -2,6 +2,7 @@ package com.purgadell.grizzly.Worlds;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.purgadell.grizzly.Cameras.BoardCamera;
 import com.purgadell.grizzly.Input.InputAction;
 import com.purgadell.grizzly.Resources.Assets;
@@ -65,7 +66,14 @@ public class GameBoard {
                 break;
             case InputAction.SCROLL_MOUSE:
                 boardCamera.zoomCamera(null, action.zoomAmount);
+            case InputAction.CLICKED_MOUSE:
+                Vector3 unprojectCords = boardCamera.unprojectCords(action.mouseCords);
+                selectTile(unprojectCords);
         }
+    }
+
+    private void selectTile(Vector3 cords){
+
     }
 
     public void render(SpriteBatch batch){

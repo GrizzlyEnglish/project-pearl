@@ -27,7 +27,7 @@ public class Dungeon extends World {
     }
 
     public void buildBoard(){
-        board = new GameBoard(5, 5);
+        board = new GameBoard(500, 500);
     }
 
     @Override

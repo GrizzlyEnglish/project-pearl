@@ -43,8 +43,7 @@ public abstract class Tile {
         this.boardY = boardY;
         this.posX = posX;
         this.posY = posY;
-        System.out.println("Created tile BX: " + boardX + " BY: " + boardY +
-                "  in posX: " + posX + " posY: " + posY);
+
         divideSprite();
     }
 

@@ -51,6 +51,18 @@ public abstract class GameCamera {
         gameCamera.update();
     }
 
+    public boolean contains(float x, float y){
+        float halfW = (gameCamera.viewportWidth * gameCamera.zoom);
+        float leftX = gameCamera.position.x - halfW;
+        float rightX = gameCamera.position.x + halfW;
+
+        float halfH = (gameCamera.viewportHeight * gameCamera.zoom);
+        float topY = gameCamera.position.y - halfH;
+        float botY = gameCamera.position.y + halfH;
+
+        return x >= leftX && x <= rightX && y <= botY && y >= topY;
+    }
+
     public Vector3 unprojectCords(Vector3 cords){
         return gameCamera.unproject(cords);
     }

@@ -122,7 +122,9 @@ public class GameBoard {
         batch.begin();
         for(int l = boardHeight-1; l >= 0; l--){
             for(int w = boardWidth-1; w >= 0; w--){
-                boardTiles[w][l].render(batch);
+                Tile t = boardTiles[w][l];
+                if(boardCamera.contains(t.getPosX(), t.getPosY()))
+                    t.render(batch);
             }
         }
         tileHighlighter.render(batch);

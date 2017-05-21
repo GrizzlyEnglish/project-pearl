@@ -10,7 +10,8 @@ public class Variables {
     public static int V_SCREEN_HEIHGT = 600;
 
     //Size of the tile sprite
-    public static int TILE_WIDTH = 256;
-    public static int TILE_HEIGHT = 300;
+    public static final float TILE_WIDTH = 256;
+    public static final float TILE_HEIGHT = 300;
+    public static final float HOVER_OFFSET = 20;
 
 }

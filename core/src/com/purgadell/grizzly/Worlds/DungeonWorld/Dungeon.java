@@ -44,4 +44,9 @@ public class Dungeon extends World {
     public void render(SpriteBatch batch){
         board.render(batch);
     }
+
+    @Override
+    public void debugRender() {
+        board.debugRender(wireRender);
+    }
 }

@@ -10,6 +10,7 @@ import com.purgadell.grizzly.Input.InputAction;
 import com.purgadell.grizzly.Resources.Assets;
 import com.purgadell.grizzly.Resources.Textures;
 import com.purgadell.grizzly.Resources.Variables;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileHighlighter;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.DungeonTile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
 
@@ -21,18 +22,17 @@ public class GameBoard {
 
     private BoardCamera boardCamera;
     private Tile[][] boardTiles;
+    private TileHighlighter tileHighlighter;
 
     private int boardWidth;
     private int boardHeight;
-
-    private ShapeRenderer testing;
 
     public GameBoard(int w, int l){
         boardHeight = l;
         boardWidth = w;
         boardTiles = new Tile[w][l];
         boardCamera = new BoardCamera(800,600);
-        testing = new ShapeRenderer();
+
         generate();
     }
 
@@ -62,9 +62,14 @@ public class GameBoard {
                 boardTiles[w][l].setTileSprite(t);
             }
         }
+
+        t = assetManager.getTexture(Textures.TEST_SELECTED);
+        tileHighlighter = new TileHighlighter(t);
     }
 
     public void handleInput(InputAction action){
+        Vector3 unprojectedCords;
+
         switch (action.actionCode){
             case InputAction.DRAGGED_MOUSE:
                 boardCamera.panCamera(action.mouseCords);
@@ -73,19 +78,37 @@ public class GameBoard {
                 boardCamera.zoomCamera(null, action.zoomAmount);
                 break;
             case InputAction.CLICKED_MOUSE:
-                Vector3 unprojectedCords = boardCamera.unprojectCords(action.mouseCords);
+                unprojectedCords = boardCamera.unprojectCords(action.mouseCords);
                 selectTile(unprojectedCords);
+                break;
+            case InputAction.MOUSE:
+                unprojectedCords = boardCamera.unprojectCords(action.mouseCords);
+                hoverTile(unprojectedCords);
+                break;
         }
     }
 
-    private void selectTile(Vector3 cords){
-        System.out.println("Clicked at X: " + cords.x + " Y: " + cords.y);
+    private void hoverTile(Vector3 cords){
         boolean found = false;
         for(int l = boardHeight-1; l >= 0; l--){
             for(int w = boardWidth-1; w >= 0; w--){
                 Tile t = boardTiles[w][l];
-                if((found = t.checkSelected(cords.x, cords.y))) {
-                    t.setVisible(false);
+                if(!found){
+                    found = t.contains(cords.x, cords.y);
+                    t.setHovered(found);
+                } else t.setHovered(false);
+            }
+        }
+    }
+
+    private void selectTile(Vector3 cords){
+        boolean found = false;
+        for(int l = boardHeight-1; l >= 0; l--){
+            for(int w = boardWidth-1; w >= 0; w--){
+                Tile t = boardTiles[w][l];
+                if((found = t.contains(cords.x, cords.y))) {
+                    boolean highlight = t.toggleSelected();
+                    if(highlight) tileHighlighter.setTile(t);
                     break;
                 }
             }
@@ -102,12 +125,15 @@ public class GameBoard {
                 boardTiles[w][l].render(batch);
             }
         }
+        tileHighlighter.render(batch);
         batch.end();
+    }
 
-        testing.setProjectionMatrix(boardCamera.getGameCamera().combined);
+    public void debugRender(ShapeRenderer wireRender){
+        wireRender.setProjectionMatrix(boardCamera.getGameCamera().combined);
         for(int l = boardHeight-1; l >= 0; l--){
             for(int w = boardWidth-1; w >= 0; w--){
-                boardTiles[w][l].renderWireFrame(testing);
+                boardTiles[w][l].renderWireFrame(wireRender);
             }
         }
     }

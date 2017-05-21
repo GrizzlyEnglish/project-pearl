@@ -41,6 +41,17 @@ public class GameStateManager {
         else gameStates.peek().render(delta);
     }
 
+    public void debugRender(float delta){
+        if (loadingState != null){
+            loadingState.render(delta);
+            if(loadingState.isFinished()){
+                gameStates.peek().loadAssets();
+                loadingState = null;
+            }
+        }
+        else gameStates.peek().debugRender(delta);
+    }
+
     public void setState(int state) {
         popState();
         pushState(state);

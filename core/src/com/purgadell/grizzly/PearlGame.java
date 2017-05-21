@@ -19,6 +19,8 @@ public class PearlGame extends ApplicationAdapter {
 	GameStateManager gManager;
     InputHandler inputHandler;
 
+    boolean debugRender = false;
+
 	@Override
 	public void create () {
         spriteBatch = new SpriteBatch();
@@ -39,6 +41,8 @@ public class PearlGame extends ApplicationAdapter {
 
         gManager.update(dt);
         gManager.render(dt);
+
+        if(debugRender) gManager.debugRender(dt);
 	}
 	
 	@Override

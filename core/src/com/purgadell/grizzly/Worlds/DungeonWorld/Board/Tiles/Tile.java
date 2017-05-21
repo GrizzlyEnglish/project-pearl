@@ -30,12 +30,13 @@ public abstract class Tile {
     private boolean isSolid = false;
     private boolean isVisible = true;
     private boolean isSelected = false;
+    private boolean isHovered = false;
 
-    private static int HEX_HEIGHT = Variables.TILE_HEIGHT - 65;
-    private static int HEX_WIDTH = Variables.TILE_WIDTH;
+    private static final float HEX_HEIGHT = Variables.TILE_HEIGHT - 65;
+    private static final float HEX_WIDTH = Variables.TILE_WIDTH;
 
-    private static int HEX_BODY_HEIGHT = 93;
-    private static int HEX_TRI_HEIGHT = 69;
+    private static final float HEX_BODY_HEIGHT = 93;
+    private static final float HEX_TRI_HEIGHT = 69;
 
     public Tile(int boardX, int boardY, float posX, float posY){
         this.boardX = boardX;
@@ -63,14 +64,18 @@ public abstract class Tile {
                 new Vector2(posX+Variables.TILE_WIDTH/2, posY+HEX_TRI_HEIGHT));
     }
 
-    public boolean checkSelected(float x, float y){
+    public boolean contains(float x, float y){
         boolean b = body.contains(x, y);
         boolean b2 = topTri.isWithinTriangle(x,y);
         boolean b3 = bottomTri.isWithinTriangle(x,y);
         return (b || b2 || b3);
     }
 
-    public abstract void update(float delta);
+    public void update(float dt){
+        extraUpdate(dt);
+    }
+
+    public abstract void extraUpdate(float delta);
 
     public void setTileSprite(Texture t){
         this.tileSprite = new Sprite(t);
@@ -104,8 +109,34 @@ public abstract class Tile {
         test.end();
     }
 
+    public boolean toggleSelected() {
+        setSelected(!isSelected);
+        return isSelected;
+    }
+
     public void setVisible(boolean b){
         isVisible = b;
     }
 
+    public void setSelected(boolean b){
+        isSelected = b;
+    }
+
+    public boolean isSelected() { return isSelected; }
+
+    public boolean isHovered() { return isHovered; }
+
+    public void setHovered(boolean b) {
+        isHovered = b;
+        if(isHovered) tileSprite.setPosition(posX, posY + Variables.HOVER_OFFSET);
+        else tileSprite.setPosition(posX, posY);
+    }
+
+    public float getPosX() {
+        return posX;
+    }
+
+    public float getPosY() {
+        return posY;
+    }
 }

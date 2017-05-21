@@ -1,6 +1,7 @@
 package com.purgadell.grizzly.Worlds;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.purgadell.grizzly.GameStates.GameStateManager;
 import com.purgadell.grizzly.Input.InputAction;
 import com.purgadell.grizzly.Resources.Assets;
@@ -11,9 +12,11 @@ import com.purgadell.grizzly.Resources.Assets;
 
 public abstract class World {
 
-    private GameStateManager Manager;
+    protected GameStateManager Manager;
+    protected ShapeRenderer wireRender;
 
     public World(GameStateManager manager){
+        this.wireRender = new ShapeRenderer();
         this.Manager = manager;
     }
 
@@ -21,5 +24,6 @@ public abstract class World {
     public abstract void loadAssets(Assets assetManager);
     public abstract void update(float dt);
     public abstract void render(SpriteBatch batch);
+    public abstract void debugRender();
 
 }

@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Vector3;
 
 public class InputAction {
 
+    public static final byte MOUSE = 0;
     public final static byte CLICKED_MOUSE = 1;
     public final static byte DRAGGED_MOUSE = 2;
     public final static byte SCROLL_MOUSE = 3;

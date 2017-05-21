@@ -37,11 +37,11 @@ public class Play extends GameState {
 
     @Override
     public void render(float delta) {
-//        spriteBatch.begin();
-
         dungeonWorldMap.render(spriteBatch);
+    }
 
-//        spriteBatch.end();
+    public void debugRender(float dt){
+        dungeonWorldMap.debugRender();
     }
 
     @Override

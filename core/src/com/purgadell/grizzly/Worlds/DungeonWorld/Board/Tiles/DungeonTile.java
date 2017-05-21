@@ -11,7 +11,7 @@ public class DungeonTile extends Tile {
     }
 
     @Override
-    public void update(float delta) {
+    public void extraUpdate(float delta) {
 
     }
 

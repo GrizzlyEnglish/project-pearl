@@ -30,12 +30,6 @@ public class BoardCamera extends GameCamera {
         translateCamera(cords);
     }
 
-    @Override
-    public void zoomCamera(Vector3 cords, int diff) {
-        gameCamera.zoom += diff;
-        gameCamera.update();
-    }
-
     private void translateCamera(Vector3 cords){
         gameCamera.translate(cords);
         gameCamera.update();

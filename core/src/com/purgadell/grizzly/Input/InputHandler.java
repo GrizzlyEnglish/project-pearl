@@ -52,6 +52,8 @@ public class InputHandler implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        if(isDown && Math.abs(screenX - downPos.x) <= 5 && Math.abs(screenY - downPos.y) <= 5) return  false;
+
         InputAction ia = new InputAction(InputAction.DRAGGED_MOUSE, new Vector3(downPos.x - screenX, screenY - downPos.y, 0));
         actions.push(ia);
 
@@ -63,6 +65,9 @@ public class InputHandler implements InputProcessor {
 
     @Override
     public boolean mouseMoved(int screenX, int screenY) {
+        InputAction ia = new InputAction(InputAction.MOUSE, new Vector3(screenX, screenY, 0));
+        actions.push(ia);
+
         return false;
     }
 

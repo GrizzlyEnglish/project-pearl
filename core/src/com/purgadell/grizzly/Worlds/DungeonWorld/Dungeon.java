@@ -1,15 +1,17 @@
-package com.purgadell.grizzly.Worlds;
+package com.purgadell.grizzly.Worlds.DungeonWorld;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.purgadell.grizzly.GameStates.GameStateManager;
 import com.purgadell.grizzly.Input.InputAction;
 import com.purgadell.grizzly.Resources.Assets;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.GameBoard;
+import com.purgadell.grizzly.Worlds.World;
 
 /**
  * Created by Ryan English on 5/13/2017.
  */
 
-public class Dungeon extends World{
+public class Dungeon extends World {
 
     private GameBoard board;
 
@@ -25,23 +27,21 @@ public class Dungeon extends World{
     }
 
     public void buildBoard(){
-        board = new GameBoard(75, 75);
+        board = new GameBoard(5, 5);
     }
 
     @Override
     public void loadAssets(Assets assetManager) {
-        board.loadAssests(assetManager);
+        board.loadAssets(assetManager);
     }
 
     @Override
-    public void update(float dt)
-    {
+    public void update(float dt){
         board.update(dt);
     }
 
     @Override
-    public void render(SpriteBatch batch)
-    {
+    public void render(SpriteBatch batch){
         board.render(batch);
     }
 }

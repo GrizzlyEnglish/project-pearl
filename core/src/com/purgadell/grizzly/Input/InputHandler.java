@@ -16,6 +16,8 @@ public class InputHandler implements InputProcessor {
 
     private Vector2 downPos;
 
+    private boolean isDown;
+
     @Override
     public boolean keyDown(int keycode) {
         return false;
@@ -34,11 +36,17 @@ public class InputHandler implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         downPos = new Vector2(screenX, screenY);
+        isDown = true;
+
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if(isDown){
+            InputAction ia = new InputAction(InputAction.CLICKED_MOUSE, new Vector3(screenX, screenY, 0));
+            actions.push(ia);
+        }
         return false;
     }
 
@@ -48,6 +56,7 @@ public class InputHandler implements InputProcessor {
         actions.push(ia);
 
         downPos = new Vector2(screenX, screenY);
+        isDown = false;
 
         return false;
     }

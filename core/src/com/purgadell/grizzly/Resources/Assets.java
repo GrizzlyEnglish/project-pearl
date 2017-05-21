@@ -15,12 +15,18 @@ public class Assets{
         assetManager = new AssetManager();
     }
 
-    public void queAssets(){
-        assetManager.load("Tiles/test_tile_1.png", Texture.class);
+    public void queTextures(String[] resources){
+        for(String s : resources){
+            queTexture(s);
+        }
     }
 
-    public void unloadAsset(){
-        assetManager.unload("Tiles/test_tile_1.png");
+    public void queTexture(String s){
+        assetManager.load(s, Texture.class);
+    }
+
+    public void unloadAsset(String s){
+        assetManager.unload(s);
     }
 
     public Texture getTexture(String location){

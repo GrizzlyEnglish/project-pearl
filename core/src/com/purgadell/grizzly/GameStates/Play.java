@@ -1,7 +1,8 @@
 package com.purgadell.grizzly.GameStates;
 
 import com.purgadell.grizzly.Input.InputAction;
-import com.purgadell.grizzly.Worlds.Dungeon;
+import com.purgadell.grizzly.Resources.Textures;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Dungeon;
 
 /**
  * Created by Ryan English on 5/13/2017.
@@ -9,12 +10,12 @@ import com.purgadell.grizzly.Worlds.Dungeon;
 
 public class Play extends GameState {
 
-    private Dungeon dungeonMap;
+    private Dungeon dungeonWorldMap;
 
     public Play(GameStateManager manager) {
         super(manager);
-        assetManager.queAssets();
-        dungeonMap = new Dungeon(manager);
+        assetManager.queTextures(Textures.TEST_PACK);
+        dungeonWorldMap = new Dungeon(manager);
     }
 
     @Override
@@ -23,7 +24,7 @@ public class Play extends GameState {
             InputAction ia = inputHandler.actions.pop();
 
             //Figure out who I need to give action too
-            dungeonMap.handleInput(ia);
+            dungeonWorldMap.handleInput(ia);
         }
     }
 
@@ -31,21 +32,21 @@ public class Play extends GameState {
     public void update(float dt) {
         handleInput();
 
-        dungeonMap.update(dt);
+        dungeonWorldMap.update(dt);
     }
 
     @Override
     public void render(float delta) {
-        spriteBatch.begin();
+//        spriteBatch.begin();
 
-        dungeonMap.render(spriteBatch);
+        dungeonWorldMap.render(spriteBatch);
 
-        spriteBatch.end();
+//        spriteBatch.end();
     }
 
     @Override
     public void loadAssets() {
-        dungeonMap.loadAssets(assetManager);
+        dungeonWorldMap.loadAssets(assetManager);
     }
 
     @Override

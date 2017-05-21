@@ -1,4 +1,4 @@
-package com.purgadell.grizzly.Tiles;
+package com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles;
 
 /**
  * Created by Ryan English on 5/13/2017.

@@ -44,15 +44,17 @@ public abstract class Tile {
         bottomLeft = new Triangle(bL,bSplit, bLt);
 
         Vector2 bR = new Vector2(Variables.TILE_WIDTH,0);
+        Vector2 bRt = new Vector2(Variables.TILE_WIDTH,Variables.TILE_HEIGHT-hexTop);
+        bottomRight = new Triangle(bR, bSplit, bRt);
 
-        Vector2 tL = new Vector2(0,Variables.TILE_HEIGHT);
+        Vector2 tL = new Vector2(0,Variables.TILE_HEIGHT-129);
+        Vector2 tbL = new Vector2(0,Variables.TILE_HEIGHT-278);
+        Vector2 tSplit = new Vector2(Variables.TILE_WIDTH/2,Variables.TILE_HEIGHT-129);
+        topLeft = new Triangle(tL, tbL, tSplit);
 
-        Vector2 tR = new Vector2(Variables.TILE_WIDTH, Variables.TILE_HEIGHT);
-
-
-        Vector2 tSplit = new Vector2(Variables.TILE_WIDTH/2,Variables.TILE_HEIGHT);
-
-
+        Vector2 tR = new Vector2(Variables.TILE_WIDTH, Variables.TILE_HEIGHT-129);
+        Vector2 tbR = new Vector2(Variables.TILE_WIDTH,Variables.TILE_HEIGHT-278);
+        topRight = new Triangle(tR, tbR, tSplit);
     }
 
     public abstract void update(float delta);

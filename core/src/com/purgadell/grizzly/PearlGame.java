@@ -35,7 +35,8 @@ public class PearlGame extends ApplicationAdapter {
 
 	@Override
 	public void render () {
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		Gdx.graphics.setTitle(Gdx.graphics.getFramesPerSecond() + " Frames");
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         float dt = Gdx.graphics.getDeltaTime();
 

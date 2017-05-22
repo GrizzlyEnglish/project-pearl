@@ -90,7 +90,9 @@ public class GameBoard {
 
     private void hoverTile(Vector3 cords){
         boolean found = false;
-        for(int l = boardHeight-1; l >= 0; l--){
+        int height = (int)(cords.y / Variables.TILE_HEIGHT) + 3;
+
+        for(int l = height; l >= 0; l--){
             for(int w = boardWidth-1; w >= 0; w--){
                 Tile t = boardTiles[w][l];
                 if(!found){
@@ -103,7 +105,9 @@ public class GameBoard {
 
     private void selectTile(Vector3 cords){
         boolean found = false;
-        for(int l = boardHeight-1; l >= 0; l--){
+        int height = (int)(cords.y / Variables.TILE_HEIGHT) + 3;
+
+        for(int l = height; l >= 0; l--){
             for(int w = boardWidth-1; w >= 0; w--){
                 Tile t = boardTiles[w][l];
                 if((found = t.contains(cords.x, cords.y))) {

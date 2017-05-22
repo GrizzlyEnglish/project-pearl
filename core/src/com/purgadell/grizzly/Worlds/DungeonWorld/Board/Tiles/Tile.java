@@ -125,6 +125,8 @@ public abstract class Tile {
 
     public boolean isHovered() { return isHovered; }
 
+    public boolean isVisible() { return isVisible; }
+
     public void setHovered(boolean b) {
         isHovered = b;
         if(isHovered) tileSprite.setPosition(posX, posY + Variables.HOVER_OFFSET);

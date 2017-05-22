@@ -6,9 +6,10 @@ package com.purgadell.grizzly.Resources;
 
 public class Textures {
 
-    public static String TEST_TILE = "Tiles/test_tile_2.png";
-    public static String TEST_SELECTED = "Tiles/test_selected_tile.png";
+    public static String TEST_TILE = "Tests/test_tile_2.png";
+    public static String TEST_CHAR = "Tests/test_char.png";
+    public static String TEST_SELECTED = "Tests/test_selected_tile.png";
 
-    public static String[] TEST_PACK = new String[] {TEST_TILE, TEST_SELECTED};
+    public static String[] TEST_PACK = new String[] {TEST_TILE, TEST_SELECTED, TEST_CHAR};
 
 }

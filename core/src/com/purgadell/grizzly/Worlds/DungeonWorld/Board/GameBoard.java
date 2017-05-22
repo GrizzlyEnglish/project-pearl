@@ -123,7 +123,6 @@ public class GameBoard {
 
     public void render(SpriteBatch batch){
         batch.setProjectionMatrix(boardCamera.getGameCamera().combined);
-        batch.begin();
         for(int l = boardHeight-1; l >= 0; l--){
             for(int w = boardWidth-1; w >= 0; w--){
                 Tile t = boardTiles[w][l];
@@ -132,7 +131,6 @@ public class GameBoard {
             }
         }
         tileHighlighter.render(batch);
-        batch.end();
     }
 
     public void debugRender(ShapeRenderer wireRender){

@@ -40,8 +40,12 @@ public class PearlGame extends ApplicationAdapter {
 
         float dt = Gdx.graphics.getDeltaTime();
 
+        spriteBatch.begin();
+
         gManager.update(dt);
         gManager.render(dt);
+
+        spriteBatch.end();
 
         if(debugRender) gManager.debugRender(dt);
 	}

@@ -1,18 +1,21 @@
 package com.purgadell.grizzly.Worlds.DungeonWorld.Board;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.purgadell.grizzly.Cameras.BoardCamera;
+import com.purgadell.grizzly.Entities.Entity;
 import com.purgadell.grizzly.Input.InputAction;
 import com.purgadell.grizzly.Resources.Assets;
 import com.purgadell.grizzly.Resources.Textures;
 import com.purgadell.grizzly.Resources.Variables;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Generator.BoardGenerator;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileHighlighter;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.DungeonTile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
+
+import java.util.Stack;
 
 /**
  * Created by Ryan English on 5/13/2017.
@@ -30,10 +33,10 @@ public class GameBoard {
     public GameBoard(int w, int l){
         boardHeight = l;
         boardWidth = w;
-        boardTiles = new Tile[w][l];
+        boardTiles = BoardGenerator.GenerateBoard(w,l);
         boardCamera = new BoardCamera(800,600);
 
-        generate();
+//        generate();
     }
 
     private void generate(){
@@ -59,12 +62,13 @@ public class GameBoard {
         Texture t = assetManager.getTexture(Textures.TEST_TILE);
         for(int l = 0; l < boardHeight; l++){
             for(int w = 0; w < boardWidth; w++){
-                boardTiles[w][l].setTileSprite(t);
+                if(boardTiles[w][l] != null)boardTiles[w][l].setTileSprite(t);
             }
         }
 
         t = assetManager.getTexture(Textures.TEST_SELECTED);
         tileHighlighter = new TileHighlighter(t);
+
     }
 
     public void handleInput(InputAction action){
@@ -95,6 +99,7 @@ public class GameBoard {
         for(int l = height; l >= 0; l--){
             for(int w = boardWidth-1; w >= 0; w--){
                 Tile t = boardTiles[w][l];
+                if(t == null) continue;
                 if(!found){
                     found = t.contains(cords.x, cords.y);
                     t.setHovered(found);
@@ -110,6 +115,7 @@ public class GameBoard {
         for(int l = height; l >= 0; l--){
             for(int w = boardWidth-1; w >= 0; w--){
                 Tile t = boardTiles[w][l];
+                if(t == null) continue;
                 if((found = t.contains(cords.x, cords.y))) {
                     boolean highlight = t.toggleSelected();
                     if(highlight) tileHighlighter.setTile(t);
@@ -126,6 +132,7 @@ public class GameBoard {
         for(int l = boardHeight-1; l >= 0; l--){
             for(int w = boardWidth-1; w >= 0; w--){
                 Tile t = boardTiles[w][l];
+                if(t == null) continue;
                 if(boardCamera.contains(t.getPosX(), t.getPosY()))
                     t.render(batch);
             }
@@ -145,7 +152,9 @@ public class GameBoard {
     public void update(float dt){
         for(int l = 0; l < boardHeight; l++){
             for(int w = 0; w < boardWidth; w++){
-                boardTiles[w][l].update(dt);
+                Tile t = boardTiles[w][l];
+                if(t == null) continue;
+                t.update(dt);
             }
         }
     }

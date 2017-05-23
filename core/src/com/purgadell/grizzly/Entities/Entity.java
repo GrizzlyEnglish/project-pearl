@@ -25,7 +25,7 @@ public abstract class Entity {
     private int wieght;
 
     public Entity(Texture t){
-
+        this.entitySprite = new Sprite(t);
     }
 
     public void moveTile(Tile t){

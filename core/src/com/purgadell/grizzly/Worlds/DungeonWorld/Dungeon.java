@@ -27,7 +27,7 @@ public class Dungeon extends World {
     }
 
     public void buildBoard(){
-        board = new GameBoard(500, 500);
+        board = new GameBoard(50, 50);
     }
 
     @Override
@@ -43,10 +43,5 @@ public class Dungeon extends World {
     @Override
     public void render(SpriteBatch batch){
         board.render(batch);
-    }
-
-    @Override
-    public void debugRender() {
-        board.debugRender(wireRender);
     }
 }

@@ -12,6 +12,7 @@ public class Variables {
     //Size of the tile sprite
     public static final float TILE_WIDTH = 256;
     public static final float TILE_HEIGHT = 300;
+    public static final float TILE_HEIGHT_OFFSET = TILE_HEIGHT/2 + 15;
     public static final float HOVER_OFFSET = 20;
 
 }

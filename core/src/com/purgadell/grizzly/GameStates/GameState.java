@@ -28,6 +28,4 @@ public abstract class GameState implements Screen {
 
     public abstract void update(float dt);
 
-    public abstract void debugRender(float dt);
-
 }

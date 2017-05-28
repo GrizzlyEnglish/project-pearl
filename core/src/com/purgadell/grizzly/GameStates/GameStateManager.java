@@ -49,7 +49,6 @@ public class GameStateManager {
                 loadingState = null;
             }
         }
-        else gameStates.peek().debugRender(delta);
     }
 
     public void setState(int state) {

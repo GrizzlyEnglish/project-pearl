@@ -27,7 +27,7 @@ public abstract class GameCamera {
         this.gameCamera.setToOrtho(false,camWidth,camHeight);
 
         this.zoomMin = 2f;
-        this.zoomMax = 10f;
+        this.zoomMax = 50f;
 
         moveToDefaultPos();
         setWorldBounds(0,0, camWidth, camHeight);

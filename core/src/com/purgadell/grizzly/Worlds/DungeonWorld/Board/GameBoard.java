@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.purgadell.grizzly.Cameras.BoardCamera;
 import com.purgadell.grizzly.Entities.Entity;
 import com.purgadell.grizzly.Input.InputAction;
+import com.purgadell.grizzly.PearlGame;
 import com.purgadell.grizzly.Resources.Assets;
 import com.purgadell.grizzly.Resources.Textures;
 import com.purgadell.grizzly.Resources.Variables;
@@ -14,6 +15,7 @@ import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Generator.BoardGenerator;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileHighlighter;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.DungeonTile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.VoidTile;
 
 import java.util.Stack;
 
@@ -26,6 +28,7 @@ public class GameBoard {
     private BoardCamera boardCamera;
     private Tile[][] boardTiles;
     private TileHighlighter tileHighlighter;
+    private Tile hoveredTile;
 
     private int boardWidth;
     private int boardHeight;
@@ -35,34 +38,19 @@ public class GameBoard {
         boardWidth = w;
         boardTiles = BoardGenerator.GenerateBoard(w,l);
         boardCamera = new BoardCamera(800,600);
-
-//        generate();
-    }
-
-    private void generate(){
-        float x = 0;
-        float y = 0;
-
-        for(int l = 0; l < boardHeight; l++){
-            for(int w = 0; w < boardWidth; w++){
-                boardTiles[w][l] = new DungeonTile(w,l,x,y);
-                x += Variables.TILE_WIDTH;
-            }
-
-            if(l % 2 == 0) x = Variables.TILE_WIDTH / 2;
-            else x = 0;
-
-            //TODO: rce -> Figure this out, this is a hack
-            y += Variables.TILE_HEIGHT/2 + 15;
-        }
-
     }
 
     public void loadAssets(Assets assetManager){
         Texture t = assetManager.getTexture(Textures.TEST_TILE);
+        Texture v = assetManager.getTexture(Textures.TEST_VOID_TILE);
+
         for(int l = 0; l < boardHeight; l++){
             for(int w = 0; w < boardWidth; w++){
                 if(boardTiles[w][l] != null)boardTiles[w][l].setTileSprite(t);
+                else {
+                    boardTiles[w][l] = new VoidTile(w,l);
+                    boardTiles[w][l].setTileSprite(v);
+                }
             }
         }
 
@@ -93,37 +81,39 @@ public class GameBoard {
     }
 
     private void hoverTile(Vector3 cords){
-        boolean found = false;
-        int height = (int)(cords.y / Variables.TILE_HEIGHT) + 3;
+        Tile t = findTile(cords);
 
-        for(int l = height; l >= 0; l--){
-            for(int w = boardWidth-1; w >= 0; w--){
-                Tile t = boardTiles[w][l];
-                if(t == null) continue;
-                if(!found){
-                    found = t.contains(cords.x, cords.y);
-                    t.setHovered(found);
-                } else t.setHovered(false);
-            }
+        if(hoveredTile != null) hoveredTile.setHovered(false);
+        if(t != null) {
+            System.out.println("Hovering Tile (" + t.getBoardX() + "," + t.getBoardY() + ")");
+            hoveredTile = t;
+            hoveredTile.setHovered(true);
         }
     }
 
-    private void selectTile(Vector3 cords){
-        boolean found = false;
-        int height = (int)(cords.y / Variables.TILE_HEIGHT) + 3;
+    private Tile findTile(Vector3 cords){
+        int height = (int)(cords.y / Variables.TILE_HEIGHT_OFFSET);
 
-        for(int l = height; l >= 0; l--){
-            for(int w = boardWidth-1; w >= 0; w--){
-                Tile t = boardTiles[w][l];
-                if(t == null) continue;
-                if((found = t.contains(cords.x, cords.y))) {
-                    boolean highlight = t.toggleSelected();
-                    if(highlight) tileHighlighter.setTile(t);
-                    break;
+        if(height < boardHeight){
+            for(int l = height; l >= 0; l--){
+                for(int w = boardWidth-1; w >= 0; w--){
+                    Tile t = boardTiles[w][l];
+                    if(t == null) continue;
+                    if(t.contains(cords.x, cords.y)){
+                        return t;
+                    }
                 }
             }
+        }
 
-            if(found) break;
+        return null;
+    }
+
+    private void selectTile(Vector3 cords){
+        Tile t = findTile(cords);
+        if(t != null) {
+            t.toggleSelected();
+            tileHighlighter.setTile(t);
         }
     }
 
@@ -138,13 +128,15 @@ public class GameBoard {
             }
         }
         tileHighlighter.render(batch);
+
+        if(PearlGame.WIRERENDER) debugRender();
     }
 
-    public void debugRender(ShapeRenderer wireRender){
-        wireRender.setProjectionMatrix(boardCamera.getGameCamera().combined);
+    private void debugRender(){
+        PearlGame.WIRERENDERER.setProjectionMatrix(boardCamera.getGameCamera().combined);
         for(int l = boardHeight-1; l >= 0; l--){
             for(int w = boardWidth-1; w >= 0; w--){
-                boardTiles[w][l].renderWireFrame(wireRender);
+                boardTiles[w][l].renderWireFrame(PearlGame.WIRERENDERER);
             }
         }
     }

@@ -10,6 +10,10 @@ public class DungeonTile extends Tile {
         super(boardX, boardY, posX, posY);
     }
 
+    public DungeonTile(int boardX, int boardY){
+        super(boardX, boardY);
+    }
+
     @Override
     public void extraUpdate(float delta) {
 

@@ -40,10 +40,6 @@ public class Play extends GameState {
         dungeonWorldMap.render(spriteBatch);
     }
 
-    public void debugRender(float dt){
-        dungeonWorldMap.debugRender();
-    }
-
     @Override
     public void loadAssets() {
         dungeonWorldMap.loadAssets(assetManager);

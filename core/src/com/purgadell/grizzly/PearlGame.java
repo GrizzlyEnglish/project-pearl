@@ -6,23 +6,32 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.purgadell.grizzly.GameStates.GameStateManager;
 import com.purgadell.grizzly.Input.InputHandler;
 import com.purgadell.grizzly.Resources.Assets;
 
 public class PearlGame extends ApplicationAdapter {
 
+    public static boolean DEBUGRENDER = true;
+    public static boolean WIRERENDER = false;
+    public static boolean DEBUGLOCATION = true;
+    public static ShapeRenderer WIRERENDERER;
+    public static BitmapFont FONT;
+
     Assets assetManager;
     SpriteBatch spriteBatch;
 	GameStateManager gManager;
     InputHandler inputHandler;
 
-    boolean debugRender = false;
-
 	@Override
 	public void create () {
+        WIRERENDERER  = new ShapeRenderer();
+        FONT = new BitmapFont();
+
         spriteBatch = new SpriteBatch();
         assetManager = new Assets();
         inputHandler = new InputHandler();
@@ -46,8 +55,6 @@ public class PearlGame extends ApplicationAdapter {
         gManager.render(dt);
 
         spriteBatch.end();
-
-        if(debugRender) gManager.debugRender(dt);
 	}
 	
 	@Override

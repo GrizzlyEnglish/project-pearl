@@ -2,11 +2,13 @@ package com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.purgadell.grizzly.PearlGame;
 import com.purgadell.grizzly.Resources.Variables;
 
 /**
@@ -47,6 +49,15 @@ public abstract class Tile {
         divideSprite();
     }
 
+    public Tile(int boardX, int boardY){
+        this.boardX = boardX;
+        this.boardY = boardY;
+
+        placeTile(boardX, boardY);
+
+        divideSprite();
+    }
+
     //Divvy up the sprite for easy matching when clicking
     //If clicked in dead center it was this tile, if not check and make sure
     private void divideSprite(){
@@ -61,6 +72,13 @@ public abstract class Tile {
 
         bottomTri = new Triangle(new Vector2(posX, bbY), new Vector2(posX+Variables.TILE_WIDTH, bbY),
                 new Vector2(posX+Variables.TILE_WIDTH/2, posY+HEX_TRI_HEIGHT));
+    }
+
+    private void placeTile(int x, int y) {
+        posX = x * Variables.TILE_WIDTH;
+        if (y % 2 == 0) posX += Variables.TILE_WIDTH / 2;
+
+        posY = y * Variables.TILE_HEIGHT_OFFSET;
     }
 
     public boolean contains(float x, float y){
@@ -84,6 +102,13 @@ public abstract class Tile {
     public void render(SpriteBatch batch){
         if(isVisible){
             tileSprite.draw(batch);
+
+            if(PearlGame.DEBUGLOCATION){
+                PearlGame.FONT.getData().setScale(4f,4f);
+                PearlGame.FONT.draw(batch, "(" + boardX + "," + boardY + ")",
+                        posX + Variables.TILE_WIDTH/3, posY + 200);
+            }
+
         }
     }
 
@@ -140,4 +165,8 @@ public abstract class Tile {
     public float getPosY() {
         return posY;
     }
+
+    public int getBoardX() { return boardX; }
+
+    public int getBoardY() { return boardY; }
 }

@@ -30,11 +30,6 @@ public class Load extends GameState {
     }
 
     @Override
-    public void debugRender(float dt) {
-
-    }
-
-    @Override
     public void show() {
 
     }

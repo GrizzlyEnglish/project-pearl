@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.purgadell.grizzly.PearlGame;
 import com.purgadell.grizzly.Resources.Variables;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.Coordinates;
 
 /**
  * Created by Ryan English on 5/13/2017.
@@ -17,11 +18,7 @@ import com.purgadell.grizzly.Resources.Variables;
 
 public abstract class Tile {
 
-    private int boardX;
-    private int boardY;
-
-    private float posX;
-    private float posY;
+    private Coordinates tileCoords;
 
     private Triangle topTri;
     private Triangle bottomTri;
@@ -41,19 +38,19 @@ public abstract class Tile {
     private static final float HEX_TRI_HEIGHT = 69;
 
     public Tile(int boardX, int boardY, float posX, float posY){
-        this.boardX = boardX;
-        this.boardY = boardY;
-        this.posX = posX;
-        this.posY = posY;
+        this.tileCoords = new Coordinates(posX, posY, boardX, boardY);
 
         divideSprite();
     }
 
     public Tile(int boardX, int boardY){
-        this.boardX = boardX;
-        this.boardY = boardY;
+        this.tileCoords = new Coordinates(boardX, boardY);
 
-        placeTile(boardX, boardY);
+        divideSprite();
+    }
+
+    public Tile(Coordinates c){
+        this.tileCoords = c;
 
         divideSprite();
     }
@@ -61,24 +58,25 @@ public abstract class Tile {
     //Divvy up the sprite for easy matching when clicking
     //If clicked in dead center it was this tile, if not check and make sure
     private void divideSprite(){
-        float tbY = posY + (HEX_TRI_HEIGHT*2) + HEX_BODY_HEIGHT;
+        float tbY = tileCoords.position.y + (HEX_TRI_HEIGHT*2) + HEX_BODY_HEIGHT;
 
-        topTri = new Triangle(new Vector2(posX,tbY),
-                new Vector2(posX+Variables.TILE_WIDTH, tbY), new Vector2(posX+(Variables.TILE_WIDTH/2), posY+Variables.TILE_HEIGHT));
+        topTri = new Triangle(new Vector2(tileCoords.position.x,tbY),
+                new Vector2(tileCoords.position.x+Variables.TILE_WIDTH, tbY),
+                new Vector2(tileCoords.position.x+(Variables.TILE_WIDTH/2), tileCoords.position.y+Variables.TILE_HEIGHT));
 
-        body = new Rectangle(posX, posY + (HEX_TRI_HEIGHT*2), Variables.TILE_WIDTH, HEX_BODY_HEIGHT);
+        body = new Rectangle(tileCoords.position.x, tileCoords.position.y + (HEX_TRI_HEIGHT*2), Variables.TILE_WIDTH, HEX_BODY_HEIGHT);
 
         float bbY = tbY - HEX_BODY_HEIGHT;
 
-        bottomTri = new Triangle(new Vector2(posX, bbY), new Vector2(posX+Variables.TILE_WIDTH, bbY),
-                new Vector2(posX+Variables.TILE_WIDTH/2, posY+HEX_TRI_HEIGHT));
+        bottomTri = new Triangle(new Vector2(tileCoords.position.x, bbY), new Vector2(tileCoords.position.x+Variables.TILE_WIDTH, bbY),
+                new Vector2(tileCoords.position.x+Variables.TILE_WIDTH/2, tileCoords.position.y+HEX_TRI_HEIGHT));
     }
 
     private void placeTile(int x, int y) {
-        posX = x * Variables.TILE_WIDTH;
-        if (y % 2 == 0) posX += Variables.TILE_WIDTH / 2;
+        tileCoords.position.x = x * Variables.TILE_WIDTH;
+        if (y % 2 == 0) tileCoords.position.x += Variables.TILE_WIDTH / 2;
 
-        posY = y * Variables.TILE_HEIGHT_OFFSET;
+        tileCoords.position.y = y * Variables.TILE_HEIGHT_OFFSET;
     }
 
     public boolean contains(float x, float y){
@@ -96,7 +94,7 @@ public abstract class Tile {
 
     public void setTileSprite(Texture t){
         this.tileSprite = new Sprite(t);
-        this.tileSprite.setPosition(posX, posY);
+        this.tileSprite.setPosition(tileCoords.position.x, tileCoords.position.y);
     }
 
     public void render(SpriteBatch batch){
@@ -105,8 +103,8 @@ public abstract class Tile {
 
             if(PearlGame.DEBUGLOCATION){
                 PearlGame.FONT.getData().setScale(4f,4f);
-                PearlGame.FONT.draw(batch, "(" + boardX + "," + boardY + ")",
-                        posX + Variables.TILE_WIDTH/3, posY + 200);
+                PearlGame.FONT.draw(batch, "(" + tileCoords.coords.row + "," + tileCoords.coords.column + ")",
+                        tileCoords.position.x + Variables.TILE_WIDTH/3, tileCoords.position.y + 200);
             }
 
         }
@@ -154,19 +152,21 @@ public abstract class Tile {
 
     public void setHovered(boolean b) {
         isHovered = b;
-        if(isHovered) tileSprite.setPosition(posX, posY + Variables.HOVER_OFFSET);
-        else tileSprite.setPosition(posX, posY);
+        if(isHovered) tileSprite.setPosition(tileCoords.position.x, tileCoords.position.y + Variables.HOVER_OFFSET);
+        else tileSprite.setPosition(tileCoords.position.x, tileCoords.position.y);
     }
 
     public float getPosX() {
-        return posX;
+        return tileCoords.position.x;
     }
 
     public float getPosY() {
-        return posY;
+        return tileCoords.position.y;
     }
 
-    public int getBoardX() { return boardX; }
+    public int getBoardX() { return tileCoords.coords.row; }
 
-    public int getBoardY() { return boardY; }
+    public int getBoardY() { return tileCoords.coords.column; }
+
+    public Coordinates getTileCoords() { return tileCoords; }
 }

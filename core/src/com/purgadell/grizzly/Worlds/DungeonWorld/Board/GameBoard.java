@@ -85,7 +85,6 @@ public class GameBoard {
 
         if(hoveredTile != null) hoveredTile.setHovered(false);
         if(t != null) {
-            System.out.println("Hovering Tile (" + t.getBoardX() + "," + t.getBoardY() + ")");
             hoveredTile = t;
             hoveredTile.setHovered(true);
         }

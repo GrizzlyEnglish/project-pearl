@@ -1,13 +1,14 @@
 package com.purgadell.grizzly.Worlds.DungeonWorld.Board.Generator;
 
-import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileCordinates;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.Coordinates;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileCoordinates;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Room.Room;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.DungeonTile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
+import java.util.Stack;
 
 /**
  * Created by Ryan English on 5/22/2017.
@@ -27,54 +28,82 @@ public class BoardGenerator {
 
         Tile[][] board = new Tile[w][h];
 
-        buildRooms(board);
+        LinkedList<Coordinates> queued = buildPaths(board);
+
+        placeQueued(queued, board);
 
         return board;
     }
 
-    private static void buildRooms(Tile[][] board){
-        int tileAmt = boardHeight * boardWidth;
-        int roomTileCount = tileAmt / 4;
+    private static LinkedList<Coordinates> buildPaths(Tile[][] board){
+        LinkedList<Coordinates> queuedCoords = new LinkedList<Coordinates>();
+        
+        LinkedList<Coordinates> elbows = pickRandomTiles(queuedCoords, board);
+        int elbowCount = elbows.size();
 
-        boolean notKilled = true;
+        for(Coordinates c : elbows){
+            int endP = r.nextInt(elbowCount);
+            Coordinates end = elbows.get(endP);
+            drawLine(queuedCoords, board, c, end);
+        }
 
-        //while(roomTileCount > 0 || notKilled){
+        return queuedCoords;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static LinkedList<Coordinates> pickRandomTiles(LinkedList<Coordinates> queuedCoords, Tile[][] board){
+        int elbowCount = boardHeight * boardWidth / 100;
+        int count = 0;
+
+        while(count < elbowCount){
             int x = r.nextInt(boardWidth);
             int y = r.nextInt(boardHeight);
 
-            Room generatedRoom = generateRoom(board, 10, 10, 1);
-        //}
+            boolean queued = queTile(queuedCoords, board, new Coordinates(x,y));
+            if(queued) count++;
+        }
+
+        return (LinkedList<Coordinates>)queuedCoords.clone();
     }
 
+    private static void drawLine(LinkedList<Coordinates> queuedCoords, Tile[][] board, Coordinates a, Coordinates b){
+        Stack<Coordinates> path = TileCoordinates.LineOfSight(a, b);
+
+        for(Coordinates c : path){
+            queTile(queuedCoords, board, c);
+        }
+    }
+
+    //Probably scrapped
     private static Room generateRoom(Tile[][] board, int x, int y, int size) {
         Room room = null;
-        LinkedList<int[]> qRoom = new LinkedList<int[]>();
+        LinkedList<Coordinates> qRoom = new LinkedList<Coordinates>();
         boolean queued;
 
-        queued = queTile(qRoom, board, new int[]{x,y});
+        queued = queTile(qRoom, board, new Coordinates(x,y));
         if(!queued) return null;
 
-        int[] startTile = TileCordinates.getCords(x, y, 0);
+        Coordinates startTile = TileCoordinates.getCords(x, y, 0);
 
         for(int s = 1; s <= size; s++){
             int side = 2;
-            int[] newCords = startTile;
+            Coordinates newCords = startTile;
 
             for(int i = 0; i <= SIDES; i++){
                 for(int r = 0; r < s; r++){
                     queued = queTile(qRoom, board, newCords);
                     if(!queued) return null;
-                    newCords = TileCordinates.getCords(newCords, side);
+                    newCords = TileCoordinates.getCords(newCords, side);
                 }
 
                 side++;
                 if(side >= SIDES) side = 0;
             }
-            startTile = TileCordinates.getCords(startTile, 0);
+            startTile = TileCoordinates.getCords(startTile, 0);
         }
 
-        for(int[] cords : qRoom){
-            Tile t = placeTile(board, cords[0], cords[1]);
+        for(Coordinates cords : qRoom){
+            Tile t = placeTile(board, cords.coords.row, cords.coords.column);
             if(room == null) room = new Room(t, size);
             else room.addTile(t);
         }
@@ -82,19 +111,22 @@ public class BoardGenerator {
         return room;
     }
 
-    private static boolean queTile(LinkedList<int[]> queuedCords, Tile[][] board, int[] cords){
-        int x = cords[0];
-        int y = cords[1];
-
-        if(x < 0 || x >= boardWidth || y < 0 || y >= boardHeight ||
-                board[x][y] != null) {
+    private static boolean queTile(LinkedList<Coordinates> queuedCords, Tile[][] board, Coordinates cords){
+        if(cords.coords.row < 0 || cords.coords.row >= boardWidth || cords.coords.column < 0 || cords.coords.column >= boardHeight ||
+                board[cords.coords.row][cords.coords.column] != null) {
             return false;
         }
 
-        if(queuedCords == null) queuedCords = new LinkedList<int[]>();
+        if(queuedCords == null) queuedCords = new LinkedList<Coordinates>();
         queuedCords.add(cords);
 
         return true;
+    }
+
+    private static void placeQueued(LinkedList<Coordinates> queuedCords, Tile[][] board){
+        for(Coordinates c : queuedCords){
+            placeTile(board, c.coords.row, c.coords.column);
+        }
     }
 
     private static Tile placeTile(Tile[][] board, int x, int y) {

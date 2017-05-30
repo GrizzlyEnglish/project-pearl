@@ -39,36 +39,70 @@ public class BoardGenerator {
         LinkedList<Coordinates> queuedCoords = new LinkedList<Coordinates>();
         
         LinkedList<Coordinates> elbows = pickRandomTiles(queuedCoords, board);
-        int elbowCount = elbows.size();
-        int lineCount = 0;
 
         //Find the two furthest points, call these the main path
+        Coordinates a = elbows.get(0);
+        Coordinates b = elbows.get(1);
+
+        double max = 0;
+
+        for(Coordinates c : elbows){
+            for(Coordinates c2 : elbows){
+                if(c == c2) continue;
+                double dist = TileCoordinates.tileDistance(c,c2);
+                if(dist > max){
+                    a = c;
+                    b = c2;
+                    max = dist;
+                }
+            }
+        }
+
+        Stack<Coordinates> mainPath = drawLine(queuedCoords, board, a, b);
 
         //Connect other points to main path, or to branch
+        for(Coordinates c : elbows) {
+            if(c == a || c == b) continue;
+
+            Coordinates end = null;
+            double min = Double.MAX_VALUE;
+            for(Coordinates c2 : mainPath) {
+                double dist = TileCoordinates.tileDistance(c,c2);
+                if(dist < min){
+                    end = c2;
+                    min = dist;
+                }
+            }
+
+            mainPath.remove(end);
+            drawLine(queuedCoords, board, c, end);
+        }
 
         return queuedCoords;
     }
 
-    @SuppressWarnings("unchecked")
     private static LinkedList<Coordinates> pickRandomTiles(LinkedList<Coordinates> queuedCoords, Tile[][] board){
+        LinkedList<Coordinates> randoms = new LinkedList<Coordinates>();
+
         int elbowCount = boardHeight * boardWidth / 100;
         int count = 0;
 
         while(count < elbowCount){
             int x = r.nextInt(boardWidth);
             int y = r.nextInt(boardHeight);
+            Coordinates c = new Coordinates(x,y);
 
-            boolean queued = queTile(queuedCoords, board, new Coordinates(x,y));
+            boolean queued = queTile(queuedCoords, board, c);
             if(queued){
-                System.out.println("Queued (" + x + "," + y + ")");
+                randoms.add(c);
                 count++;
             }
         }
 
-        return (LinkedList<Coordinates>)queuedCoords.clone();
+        return randoms;
     }
 
-    private static void drawLine(LinkedList<Coordinates> queuedCoords, Tile[][] board, Coordinates a, Coordinates b){
+    private static Stack<Coordinates> drawLine(LinkedList<Coordinates> queuedCoords, Tile[][] board, Coordinates a, Coordinates b){
         Stack<Coordinates> path = TileCoordinates.LineOfSight(a, b);
 
         for(Coordinates c : path){
@@ -76,6 +110,8 @@ public class BoardGenerator {
         }
 
         System.out.println("Drew line from (" + a.coords.row + "," + a.coords.column + ") to (" + b.coords.row + "," + b.coords.column + ")");
+
+        return path;
     }
 
     //Probably scrapped

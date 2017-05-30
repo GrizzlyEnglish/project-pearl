@@ -133,4 +133,8 @@ public class TileCoordinates {
         }
     }
 
+    public static double tileDistance(Coordinates a, Coordinates b){
+        return Math.sqrt(Math.pow(a.position.x-b.position.x, 2) + Math.pow(a.position.y-a.position.y, 2));
+    }
+
 }

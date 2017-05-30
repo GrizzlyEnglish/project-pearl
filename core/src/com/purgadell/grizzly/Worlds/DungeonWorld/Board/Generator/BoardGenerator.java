@@ -40,12 +40,11 @@ public class BoardGenerator {
         
         LinkedList<Coordinates> elbows = pickRandomTiles(queuedCoords, board);
         int elbowCount = elbows.size();
+        int lineCount = 0;
 
-        for(Coordinates c : elbows){
-            int endP = r.nextInt(elbowCount);
-            Coordinates end = elbows.get(endP);
-            drawLine(queuedCoords, board, c, end);
-        }
+        //Find the two furthest points, call these the main path
+
+        //Connect other points to main path, or to branch
 
         return queuedCoords;
     }
@@ -60,7 +59,10 @@ public class BoardGenerator {
             int y = r.nextInt(boardHeight);
 
             boolean queued = queTile(queuedCoords, board, new Coordinates(x,y));
-            if(queued) count++;
+            if(queued){
+                System.out.println("Queued (" + x + "," + y + ")");
+                count++;
+            }
         }
 
         return (LinkedList<Coordinates>)queuedCoords.clone();
@@ -72,6 +74,8 @@ public class BoardGenerator {
         for(Coordinates c : path){
             queTile(queuedCoords, board, c);
         }
+
+        System.out.println("Drew line from (" + a.coords.row + "," + a.coords.column + ") to (" + b.coords.row + "," + b.coords.column + ")");
     }
 
     //Probably scrapped

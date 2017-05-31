@@ -58,11 +58,22 @@ public class BoardGenerator {
             }
         }
 
-        Stack<Coordinates> mainPath = drawLine(queuedCoords, board, a, b);
+        Stack<Coordinates> mainPath = drawLine(queuedCoords, a, b);
+
+        boolean[] ignoreElbow = new boolean[elbows.size()];
+
+        for(Coordinates c : mainPath){
+            for(int i = 0; i < elbows.size(); i++){
+                Coordinates c2 = elbows.get(i);
+
+                if(c.coords.row == c2.coords.row &&
+                        c.coords.column == c2.coords.column) ignoreElbow[i] = true;
+            }
+        }
 
         //Connect other points to main path, or to branch
         for(Coordinates c : elbows) {
-            if(c == a || c == b) continue;
+            if(ignoreElbow[1]) continue;
 
             Coordinates end = null;
             double min = Double.MAX_VALUE;
@@ -74,8 +85,16 @@ public class BoardGenerator {
                 }
             }
 
-            mainPath.remove(end);
-            drawLine(queuedCoords, board, c, end);
+            Stack<Coordinates> branch = drawLine(queuedCoords, c, end);
+
+            for(Coordinates cb : branch){
+                for(int i = 0; i < elbows.size(); i++){
+                    Coordinates cb2 = elbows.get(i);
+
+                    if(cb.coords.row == cb2.coords.row &&
+                            cb.coords.column == cb2.coords.column) ignoreElbow[i] = true;
+                }
+            }
         }
 
         return queuedCoords;
@@ -88,12 +107,13 @@ public class BoardGenerator {
         int count = 0;
 
         while(count < elbowCount){
-            int x = r.nextInt(boardWidth);
-            int y = r.nextInt(boardHeight);
-            Coordinates c = new Coordinates(x,y);
+            Coordinates c = new Coordinates(r.nextInt(boardWidth),r.nextInt(boardHeight));
 
-            boolean queued = queTile(queuedCoords, board, c);
-            if(queued){
+            if(!checkCoords(c)) continue;
+
+            boolean isQueued = tileIsQueued(queuedCoords. c);
+            if(!isQueued){
+                queTile(queuedCoords, c);
                 randoms.add(c);
                 count++;
             }
@@ -102,14 +122,14 @@ public class BoardGenerator {
         return randoms;
     }
 
-    private static Stack<Coordinates> drawLine(LinkedList<Coordinates> queuedCoords, Tile[][] board, Coordinates a, Coordinates b){
+    private static Stack<Coordinates> drawLine(LinkedList<Coordinates> queuedCoords, Coordinates a, Coordinates b){
         Stack<Coordinates> path = TileCoordinates.LineOfSight(a, b);
 
         for(Coordinates c : path){
-            queTile(queuedCoords, board, c);
+            queTile(queuedCoords, c);
         }
 
-        System.out.println("Drew line from (" + a.coords.row + "," + a.coords.column + ") to (" + b.coords.row + "," + b.coords.column + ")");
+        //Make a draw line that returns the path and a draw line that returns overlapped tiles
 
         return path;
     }
@@ -120,7 +140,7 @@ public class BoardGenerator {
         LinkedList<Coordinates> qRoom = new LinkedList<Coordinates>();
         boolean queued;
 
-        queued = queTile(qRoom, board, new Coordinates(x,y));
+        queued = queTile(qRoom, new Coordinates(x,y), false);
         if(!queued) return null;
 
         Coordinates startTile = TileCoordinates.getCords(x, y, 0);
@@ -131,7 +151,7 @@ public class BoardGenerator {
 
             for(int i = 0; i <= SIDES; i++){
                 for(int r = 0; r < s; r++){
-                    queued = queTile(qRoom, board, newCords);
+                    queued = queTile(qRoom, newCords, false);
                     if(!queued) return null;
                     newCords = TileCoordinates.getCords(newCords, side);
                 }
@@ -151,16 +171,43 @@ public class BoardGenerator {
         return room;
     }
 
-    private static boolean queTile(LinkedList<Coordinates> queuedCords, Tile[][] board, Coordinates cords){
-        if(cords.coords.row < 0 || cords.coords.row >= boardWidth || cords.coords.column < 0 || cords.coords.column >= boardHeight ||
-                board[cords.coords.row][cords.coords.column] != null) {
-            return false;
-        }
-
+    private static void queTile(LinkedList<Coordinates> queuedCords, Coordinates cords){
         if(queuedCords == null) queuedCords = new LinkedList<Coordinates>();
         queuedCords.add(cords);
+    }
 
-        return true;
+    private static boolean tileIsQueued(LinkedList<Coordinates> queuedCords, Coordinates cords){
+        for(Coordinates c : queuedCords){
+            if(c.coords.row == cords.coords.row && c.coords.column == cords.coords.column){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static boolean checkCoords(Coordinates cords){
+        if(cords.coords.row < 0 || cords.coords.row >= boardWidth
+                || cords.coords.column < 0 || cords.coords.column >= boardHeight) {
+            return false;
+        }
+    }
+
+    private static boolean unQueTile(LinkedList<Coordinates> queuedCords, Coordinates cords) {
+        Coordinates remove = null;
+        for(Coordinates c : queuedCords){
+            if(c.coords.row == cords.coords.row && c.coords.column == cords.coords.column){
+                remove = c;
+                break;
+            }
+        }
+
+        if(remove != null){
+            queuedCords.remove(remove);
+            return true;
+        }
+
+        return false;
     }
 
     private static void placeQueued(LinkedList<Coordinates> queuedCords, Tile[][] board){

@@ -26,6 +26,22 @@ public class Coordinates {
             this.row = r;
             this.column = c;
         }
+
+        public boolean isWithin(int x, int y){
+            return row >= 0 && row < x && column >= 0 && column < y;
+        }
+
+        public boolean Equals(Coordinates c){
+            return c.coords.row == row && c.coords.column == column;
+        }
+
+        public int rowDistance(BoardCoords b){
+            return Math.abs(row - b.row);
+        }
+
+        public int colDistance(BoardCoords b){
+            return Math.abs(column - b.column);
+        }
     }
 
     public Position position;
@@ -62,6 +78,17 @@ public class Coordinates {
         return new BoardCoords(row, column);
     }
 
+    public String ToString(){
+        return "BOARD(" + coords.row + "," + coords.column + ") -- POS(" + position.x + "," + position.y + ")";
+    }
+
+    public double distance(Coordinates c){
+        return Math.sqrt(Math.pow(position.x-c.position.x, 2) + Math.pow(position.y-c.position.y, 2));
+    }
+
+    public double boardDistance(Coordinates c){
+        return Math.sqrt(Math.pow(coords.row-c.coords.row, 2) + Math.pow(coords.column-c.coords.column, 2));
+    }
 
 }
 

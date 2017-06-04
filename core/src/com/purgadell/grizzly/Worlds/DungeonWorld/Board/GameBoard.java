@@ -1,8 +1,10 @@
 package com.purgadell.grizzly.Worlds.DungeonWorld.Board;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.purgadell.grizzly.Cameras.BoardCamera;
 import com.purgadell.grizzly.Entities.Entity;

@@ -169,4 +169,6 @@ public abstract class Tile {
     public int getBoardY() { return tileCoords.coords.column; }
 
     public Coordinates getTileCoords() { return tileCoords; }
+
+    public int hueristicCots() { return 0; };
 }

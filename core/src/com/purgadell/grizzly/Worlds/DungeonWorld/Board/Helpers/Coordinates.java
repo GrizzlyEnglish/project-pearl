@@ -27,6 +27,15 @@ public class Coordinates {
             this.column = c;
         }
 
+        public boolean isWithinWithBounds(Coordinates c, int offset){
+            return isWithinWithBounds(c, offset, offset);
+        }
+
+        public boolean isWithinWithBounds(Coordinates c, int offsetX, int offsetY){
+            return c.coords.row-offsetX <= row && c.coords.row+offsetX >= row
+                    && c.coords.column-offsetX <= column && c.coords.column+offsetY >= column;
+        }
+
         public boolean isWithin(int x, int y){
             return row >= 0 && row < x && column >= 0 && column < y;
         }
@@ -83,7 +92,11 @@ public class Coordinates {
     }
 
     public double distance(Coordinates c){
-        return Math.sqrt(Math.pow(position.x-c.position.x, 2) + Math.pow(position.y-c.position.y, 2));
+        return distance(position.x, position.y, c.position.x, c.position.y);
+    }
+
+    public static double distance(float x1, float y1, float x2, float y2){
+        return Math.sqrt(Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2));
     }
 
     public double boardDistance(Coordinates c){

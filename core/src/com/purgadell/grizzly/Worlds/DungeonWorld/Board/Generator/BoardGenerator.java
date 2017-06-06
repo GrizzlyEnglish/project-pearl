@@ -2,6 +2,7 @@ package com.purgadell.grizzly.Worlds.DungeonWorld.Board.Generator;
 
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.Coordinates;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.PathFinder;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileGetter;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.DungeonTile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
 
@@ -35,15 +36,34 @@ public class BoardGenerator {
 
     private static LinkedList<Coordinates> buildPaths(){
         LinkedList<Coordinates> queuedCoords = new LinkedList<Coordinates>();
+        TileGetter tG = new TileGetter(boardWidth, boardHeight);
 
         buildMainPath(queuedCoords);
+
+        buildBranch(tG, queuedCoords);
 
         return queuedCoords;
     }
 
-    private static void buildMainPath(LinkedList<Coordinates> queued){
-        //Get 3 points, start exit and mid point, these will gene
+    private static void buildBranch(TileGetter tileGetter, LinkedList<Coordinates> queued){
 
+        //Break off map into 15x15 squares, if no tiles exist in squre create end point
+        //Then find the closest tile to the end point, on the path or on another square
+        //Connect everything
+
+        int index = r.nextInt(queued.size());
+        Coordinates c = queued.get(index);
+
+        int borderCount = tileGetter.borderAroundTileCount(c);
+
+        if(borderCount == 5) return;
+
+        Coordinates end = randomPoint(0, 0, boardWidth, boardHeight);
+
+        drawLine(queued, c, end);
+    }
+
+    private static void buildMainPath(LinkedList<Coordinates> queued){
         int startSide = r.nextInt(2);
         int endSide = startSide + 2;
 
@@ -56,13 +76,15 @@ public class BoardGenerator {
         System.out.println("End Point: " + end.ToString());
 
         buildPath(queued, start, end);
-
     }
 
     private static LinkedList<Coordinates> buildPath(LinkedList<Coordinates> queued, Coordinates start, Coordinates end){
         LinkedList<Coordinates> path = new LinkedList<Coordinates>();
         Coordinates midp = start;
         boolean searching = true;
+
+        int minDiff = 5;
+        int maxDiff = 15;
 
         do{
             queued.push(midp);
@@ -81,24 +103,28 @@ public class BoardGenerator {
                 Coordinates nextP;
 
                 boolean xNegative = end.coords.row > midp.coords.row;
-
-                //Do a check to see if x or y are within certain bounds, if they are skip them
-                int offset = 10;
-                int xMin = midp.coords.row + (xNegative ? offset : -offset);
-                int xMax = end.coords.row + (xNegative ? -offset : offset);
-                if(xMax > xMin + 15) xMax = xMin + 15;
-
                 boolean yNegative = end.coords.column > midp.coords.column;
-                int yMin = midp.coords.column + (yNegative ? offset : -offset);
-                int yMax = end.coords.column + (yNegative ? -offset : offset);
-                if(yMax > yMin + 15) yMax = yMin + 15;
 
-                System.out.println("xMin: " + xMin + " xMax: " + xMax + " yMin: " + yMin + " yMax: " + yMax);
-                nextP = randomPoint(xMin, yMin, xMax, yMax);
+                int offset = randomIntInRange(minDiff, maxDiff);
+
+                int midP_Offset_X = plusMinus(midp.coords.row, offset, xNegative);
+                int midP_Offset_Y = plusMinus(midp.coords.column, offset, yNegative);
+
+                int end_Offset_X = plusMinus(end.coords.row, offset, xNegative);
+                int end_Offset_Y = plusMinus(end.coords.column, offset, yNegative);
+
+                double dist = Coordinates.distance(midP_Offset_X, midP_Offset_Y, end_Offset_X, end_Offset_Y);
+
+                if(dist > maxDiff){
+                    end_Offset_X = midP_Offset_X + maxDiff;
+                    end_Offset_Y = midP_Offset_Y + maxDiff;
+                }
+
+                nextP = randomPoint(midP_Offset_X, midP_Offset_Y, end_Offset_X, end_Offset_Y);
                 System.out.println("Next Point: " + nextP.ToString());
 
-                if(nextP.coords.row == midp.coords.row ||
-                        nextP.coords.column == midp.coords.column) continue;
+                if(nextP.coords.Equals(midp) || nextP.coords.isWithinWithBounds(midp, minDiff-1)) continue;
+
                 System.out.println("Placed");
                 shortPath = drawLine(queued, midp, nextP);
                 midp = nextP;
@@ -107,9 +133,14 @@ public class BoardGenerator {
             for(Coordinates c : shortPath){
                 path.push(c);
             }
+
         }while(searching);
 
         return path;
+    }
+
+    private static int plusMinus(int value, int diff, boolean minus){
+        return value + (minus ? diff : -diff);
     }
 
     private static Coordinates getPointBySide(int side){
@@ -125,14 +156,14 @@ public class BoardGenerator {
         }
     }
 
-    private static Coordinates randomPoint(int minX, int minY, int maxX, int maxY){
-        int x = randomIntInRange(minX, maxX);
-        int y = randomIntInRange(minY, maxY);
+    private static Coordinates randomPoint(int x1, int y1, int x2, int y2){
+        int x = randomIntInRange(x1, x2);
+        int y = randomIntInRange(y1, y2);
 
-        if(x > boardWidth) x = boardWidth-1;
+        if(x >= boardWidth) x = boardWidth-1;
         else if (x < 0) x = 0;
 
-        if(y > boardHeight) y = boardHeight-1;
+        if(y >= boardHeight) y = boardHeight-1;
         else if (y < 0) y = 0;
 
         return new Coordinates(x,y);

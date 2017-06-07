@@ -63,6 +63,24 @@ public class TileGetter {
         return cordsRadius;
     }
 
+    public LinkedList<Coordinates> boardBox(Coordinates c, int w, int h) {
+        return boardBox(c.coords.row, c.coords.column, w, h);
+    }
+
+    public LinkedList<Coordinates> boardBox(int bottomLeftX, int bottomLeftY, int w, int h) {
+        LinkedList<Coordinates> block = new LinkedList<Coordinates>();
+
+        for(int i = 0; i < w; i++){
+            for(int i2 = 0; i2 < h; i2++){
+                Coordinates nextC = new Coordinates(bottomLeftX+i,bottomLeftY+i2);
+
+                if(nextC.coords.isWithin(boardWidth, boardHeight)) block.push(nextC);
+            }
+        }
+
+        return block;
+    }
+
     public LinkedList<Coordinates> tilesInRadius(Coordinates c, int radius){
         LinkedList<Coordinates> cordsRadius = new LinkedList<Coordinates>();
 

@@ -1,13 +1,17 @@
 package com.purgadell.grizzly.Worlds.DungeonWorld.Board.Generator;
 
+import com.purgadell.grizzly.Input.InputAction;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.Coordinates;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.PathFinder;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileGetter;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.DungeonTile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Random;
+
+import sun.awt.image.ImageWatched;
 
 /**
  * Created by Ryan English on 5/22/2017.
@@ -40,27 +44,77 @@ public class BoardGenerator {
 
         buildMainPath(queuedCoords);
 
-        buildBranch(tG, queuedCoords);
+        LinkedList<LinkedList<Coordinates>> emptyBlocks = findOpenBlocks(tG, queuedCoords);
+
+        for(LinkedList<Coordinates> block : emptyBlocks){
+            buildBranch(block, queuedCoords);
+        }
 
         return queuedCoords;
     }
 
-    private static void buildBranch(TileGetter tileGetter, LinkedList<Coordinates> queued){
+    private static LinkedList<LinkedList<Coordinates>> findOpenBlocks(TileGetter tileGetter, LinkedList<Coordinates> queued){
+        int blockW = boardWidth-1 % 2 == 0 ? boardWidth / 4 : boardWidth / 5;
+        int blockH = boardHeight-1 % 2 == 0 ? boardHeight / 4 : boardHeight / 5;
+
+        System.out.println("Block size: " + blockW + " by " + blockH);
+
+        LinkedList<LinkedList<Coordinates>> blocks = new LinkedList<LinkedList<Coordinates>>();
+
+        for(int x = 0; x < boardWidth; x+=blockW){
+            for(int y = 0; y < boardHeight; y+=blockH){
+                LinkedList<Coordinates> block = tileGetter.boardBox(x,y,blockW,blockH);
+
+                if(listWithinList(block, queued)){
+                    System.out.println("Empty block at (" + x + "," + y + ")");
+                    blocks.push(block);
+                }
+            }
+        }
+
+        return blocks;
+    }
+
+    private static boolean listWithinList(LinkedList<Coordinates> list, LinkedList<Coordinates> within){
+        boolean allEmpty = true;
+        for(Coordinates bC : list){
+            if(isWithinList(bC, within)){
+                allEmpty = false;
+                break;
+            }
+        }
+        return allEmpty;
+    }
+
+    private static boolean isWithinList(Coordinates c, LinkedList<Coordinates> list){
+        for(Coordinates q: list){
+            if(c.coords.row == q.coords.row &&
+                    c.coords.column == q.coords.column){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static void buildBranch(TileGetter tileGetter, LinkedList<Coordinates> emptyBlock, LinkedList<Coordinates> queued){
 
         //Break off map into 15x15 squares, if no tiles exist in squre create end point
         //Then find the closest tile to the end point, on the path or on another square
         //Connect everything
 
-        int index = r.nextInt(queued.size());
-        Coordinates c = queued.get(index);
+        int index = r.nextInt(emptyBlock.size());
+        Coordinates start = emptyBlock.get(index);
 
-        int borderCount = tileGetter.borderAroundTileCount(c);
+        do{
+            index = r.nextInt(queued.size());
+            Coordinates end = queued.get(index);
 
-        if(borderCount == 5) return;
+            LinkedList<Coordinates> border = tileGetter.borderAroundTile(end, 1);
 
-        Coordinates end = randomPoint(0, 0, boardWidth, boardHeight);
+        } while()
 
-        drawLine(queued, c, end);
+        drawLine(queued, start, end);
     }
 
     private static void buildMainPath(LinkedList<Coordinates> queued){

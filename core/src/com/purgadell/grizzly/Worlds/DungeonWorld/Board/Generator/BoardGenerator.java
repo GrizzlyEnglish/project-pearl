@@ -42,15 +42,42 @@ public class BoardGenerator {
         LinkedList<Coordinates> queuedCoords = new LinkedList<Coordinates>();
         TileGetter tG = new TileGetter(boardWidth, boardHeight);
 
+        System.out.println("------------------MAIN PATH--------------------");
         buildMainPath(queuedCoords);
+        System.out.println("------------------END MAIN PATH--------------------");
 
+        System.out.println("------------------BRANCHES--------------------");
         LinkedList<LinkedList<Coordinates>> emptyBlocks = findOpenBlocks(tG, queuedCoords);
 
+        System.out.println("Found " + emptyBlocks.size() + " empty blocks");
         for(LinkedList<Coordinates> block : emptyBlocks){
-            buildBranch(block, queuedCoords);
+            buildBranch(tG, block, queuedCoords);
         }
+        System.out.println("------------------END BRANCHES--------------------");
+
+        System.out.println("------------------START DEAD END--------------------");
+
+        LinkedList<Coordinates> deadEnd = findDeadEnds(tG, queuedCoords);
+        System.out.println("DeadEnd count: " + deadEnd.size());
+
+        System.out.println("------------------END DEAD END--------------------");
 
         return queuedCoords;
+    }
+
+    private static LinkedList<Coordinates> findDeadEnds(TileGetter tileGetter, LinkedList<Coordinates> queued){
+        LinkedList<Coordinates> deadEnds = new LinkedList<Coordinates>();
+
+        for(Coordinates c : queued){
+            LinkedList<Coordinates> border = tileGetter.borderAroundTile(c, 1);
+
+            int borderCount = listWithinListCount(border, queued);
+
+            if(borderCount == 1) deadEnds.push(c);
+        }
+
+
+        return deadEnds;
     }
 
     private static LinkedList<LinkedList<Coordinates>> findOpenBlocks(TileGetter tileGetter, LinkedList<Coordinates> queued){
@@ -65,9 +92,9 @@ public class BoardGenerator {
             for(int y = 0; y < boardHeight; y+=blockH){
                 LinkedList<Coordinates> block = tileGetter.boardBox(x,y,blockW,blockH);
 
-                if(listWithinList(block, queued)){
-                    System.out.println("Empty block at (" + x + "," + y + ")");
+                if(!listWithinList(block, queued)){
                     blocks.push(block);
+                    System.out.println("Added Block");
                 }
             }
         }
@@ -76,25 +103,35 @@ public class BoardGenerator {
     }
 
     private static boolean listWithinList(LinkedList<Coordinates> list, LinkedList<Coordinates> within){
-        boolean allEmpty = true;
         for(Coordinates bC : list){
             if(isWithinList(bC, within)){
-                allEmpty = false;
-                break;
+                System.out.println(bC.ToString() + " is within list");
+                return true;
             }
         }
-        return allEmpty;
+        return false;
+    }
+
+    private static int listWithinListCount(LinkedList<Coordinates> list, LinkedList<Coordinates> within){
+        int count = 0;
+
+        for(Coordinates bC : list){
+            if(isWithinList(bC, within)){
+                count++;
+            }
+        }
+        return count;
     }
 
     private static boolean isWithinList(Coordinates c, LinkedList<Coordinates> list){
         for(Coordinates q: list){
             if(c.coords.row == q.coords.row &&
                     c.coords.column == q.coords.column){
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     private static void buildBranch(TileGetter tileGetter, LinkedList<Coordinates> emptyBlock, LinkedList<Coordinates> queued){
@@ -106,15 +143,26 @@ public class BoardGenerator {
         int index = r.nextInt(emptyBlock.size());
         Coordinates start = emptyBlock.get(index);
 
-        do{
+        Coordinates end = start;
+        boolean searching = true;
+
+        while(searching){
             index = r.nextInt(queued.size());
-            Coordinates end = queued.get(index);
+            end = queued.get(index);
+
+            if(end.coords.row == start.coords.row || end.coords.column == start.coords.column) continue;
 
             LinkedList<Coordinates> border = tileGetter.borderAroundTile(end, 1);
 
-        } while()
+            int borders = listWithinListCount(border, queued);
 
-        drawLine(queued, start, end);
+            searching = borders > 3;
+        }
+
+        System.out.println("Branch at " + start.ToString() + " to " + end.ToString());
+
+        drawLine(queued, start, end, true);
+
     }
 
     private static void buildMainPath(LinkedList<Coordinates> queued){
@@ -151,7 +199,7 @@ public class BoardGenerator {
             System.out.println("Dist Left: " + endDist);
 
             if(endDist < 10.0){
-                shortPath = drawLine(queued, midp, end);
+                shortPath = drawLine(queued, midp, end, false);
                 searching = false;
             } else {
                 Coordinates nextP;
@@ -180,7 +228,7 @@ public class BoardGenerator {
                 if(nextP.coords.Equals(midp) || nextP.coords.isWithinWithBounds(midp, minDiff-1)) continue;
 
                 System.out.println("Placed");
-                shortPath = drawLine(queued, midp, nextP);
+                shortPath = drawLine(queued, midp, nextP, false);
                 midp = nextP;
             }
 
@@ -241,10 +289,11 @@ public class BoardGenerator {
         return r.nextInt(range) + min;
     }
 
-    private static LinkedList<Coordinates> drawLine(LinkedList<Coordinates> queuedCoords, Coordinates a, Coordinates b){
+    private static LinkedList<Coordinates> drawLine(LinkedList<Coordinates> queuedCoords, Coordinates a, Coordinates b, boolean quitOnOverlap){
         LinkedList<Coordinates> path = PathFinder.getPath(a, b, boardWidth, boardHeight);
 
         for(Coordinates c : path){
+            if(quitOnOverlap && isWithinList(c, queuedCoords)) break;
             queTile(queuedCoords, c);
         }
 

@@ -16,27 +16,6 @@ public class TileGetter {
         this.boardHeight = boardHeight;
     }
 
-    public int borderAroundTileCount(Coordinates cords){
-        int x = cords.coords.row;
-        int y = cords.coords.column;
-        int count = 0;
-
-        for(int i = 0; i < 6; i++){
-            int direction = i + 1;
-
-            if(direction == 6) direction = 0;
-
-            Coordinates nextC = getCords(x,y, direction);
-
-            if(nextC.coords.isWithin(boardWidth, boardHeight)) count++;
-
-            x = nextC.coords.row;
-            y = nextC.coords.column;
-        }
-
-        return count;
-    }
-
     public LinkedList<Coordinates> borderAroundTile(Coordinates cords, int radius){
         LinkedList<Coordinates> cordsRadius = new LinkedList<Coordinates>();
 
@@ -69,12 +48,13 @@ public class TileGetter {
 
     public LinkedList<Coordinates> boardBox(int bottomLeftX, int bottomLeftY, int w, int h) {
         LinkedList<Coordinates> block = new LinkedList<Coordinates>();
-
+        System.out.println("-------------BLOCK------------------");
         for(int i = 0; i < w; i++){
             for(int i2 = 0; i2 < h; i2++){
                 Coordinates nextC = new Coordinates(bottomLeftX+i,bottomLeftY+i2);
 
                 if(nextC.coords.isWithin(boardWidth, boardHeight)) block.push(nextC);
+                System.out.println(nextC.ToString());
             }
         }
 

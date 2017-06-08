@@ -111,10 +111,10 @@ public class PathFinder {
     private static LinkedList<Coordinates> calcPath(Node end){
         LinkedList<Coordinates> path = new LinkedList<Coordinates>();
 
-        while(end.parent_Node != null){
+        do{
             path.push(end.cords);
             end = end.parent_Node;
-        }
+        }while(end.parent_Node != null);
 
         return path;
     }

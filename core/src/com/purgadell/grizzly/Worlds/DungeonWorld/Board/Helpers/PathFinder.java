@@ -114,7 +114,7 @@ public class PathFinder {
         do{
             path.push(end.cords);
             end = end.parent_Node;
-        }while(end.parent_Node != null);
+        }while(end != null && end.parent_Node != null);
 
         return path;
     }

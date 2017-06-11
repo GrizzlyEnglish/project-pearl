@@ -19,7 +19,7 @@ public class PearlGame extends ApplicationAdapter {
 
     public static boolean DEBUGRENDER = true;
     public static boolean WIRERENDER = false;
-    public static boolean DEBUGLOCATION = true;
+    public static boolean DEBUGLOCATION = false;
     public static ShapeRenderer WIRERENDERER;
     public static BitmapFont FONT;
 

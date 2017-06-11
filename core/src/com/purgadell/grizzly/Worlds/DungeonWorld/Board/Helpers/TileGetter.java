@@ -1,5 +1,7 @@
 package com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers;
 
+import com.purgadell.grizzly.Resources.Variables;
+
 import java.util.LinkedList;
 
 /**
@@ -65,7 +67,7 @@ public class TileGetter {
         LinkedList<Coordinates> cordsRadius = new LinkedList<Coordinates>();
 
         for(int i = 1; i <= radius; i++){
-            LinkedList<Coordinates> temp = borderAroundTile(c, radius);
+            LinkedList<Coordinates> temp = borderAroundTile(c, i);
 
             for(Coordinates c2 : temp){
                 cordsRadius.push(c2);
@@ -73,6 +75,15 @@ public class TileGetter {
         }
 
         return cordsRadius;
+    }
+
+    public boolean areNeighbours(Coordinates a, Coordinates b){
+        for(int i = 0; i < Variables.TIKE_SIDES; i++){
+            Coordinates t = getCords(a, i);
+            if(t.coords.column == b.coords.column && t.coords.row == b.coords.row) return true;
+        }
+
+        return false;
     }
 
     public Coordinates getCords(Coordinates c, int side){

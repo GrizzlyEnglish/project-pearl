@@ -5,6 +5,7 @@ import com.purgadell.grizzly.GameStates.GameStateManager;
 import com.purgadell.grizzly.Input.InputAction;
 import com.purgadell.grizzly.Resources.Assets;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.GameBoard;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Generator.BoardGenerator;
 import com.purgadell.grizzly.Worlds.World;
 
 /**
@@ -27,7 +28,7 @@ public class Dungeon extends World {
     }
 
     public void buildBoard(){
-        board = new GameBoard(50, 50);
+        board = new BoardGenerator().generateBoard(75, 75);
     }
 
     @Override

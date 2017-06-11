@@ -2,7 +2,6 @@ package com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -11,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.purgadell.grizzly.PearlGame;
 import com.purgadell.grizzly.Resources.Variables;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.Coordinates;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Obstructions.Obstructions;
 
 /**
  * Created by Ryan English on 5/13/2017.
@@ -18,6 +18,7 @@ import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.Coordinates;
 
 public abstract class Tile {
 
+    private Obstructions tileObstruction;
     private Coordinates tileCoords;
 
     private Triangle topTri;
@@ -101,6 +102,8 @@ public abstract class Tile {
         if(isVisible){
             tileSprite.draw(batch);
 
+            if(tileObstruction != null) tileObstruction.render(batch);
+
             if(PearlGame.DEBUGLOCATION){
                 PearlGame.FONT.getData().setScale(4f,4f);
                 PearlGame.FONT.draw(batch, "(" + tileCoords.coords.row + "," + tileCoords.coords.column + ")",
@@ -152,8 +155,13 @@ public abstract class Tile {
 
     public void setHovered(boolean b) {
         isHovered = b;
-        if(isHovered) tileSprite.setPosition(tileCoords.position.x, tileCoords.position.y + Variables.HOVER_OFFSET);
-        else tileSprite.setPosition(tileCoords.position.x, tileCoords.position.y);
+        if(isHovered){
+            tileSprite.setPosition(tileCoords.position.x, tileCoords.position.y + Variables.HOVER_OFFSET);
+            if(tileObstruction != null) tileObstruction.setSpritePos(tileCoords.position.x, tileCoords.position.y + Variables.HOVER_OFFSET);
+        } else {
+            tileSprite.setPosition(tileCoords.position.x, tileCoords.position.y);
+            if(tileObstruction != null) tileObstruction.setSpritePos(tileCoords.position.x, tileCoords.position.y);
+        }
     }
 
     public float getPosX() {
@@ -171,4 +179,13 @@ public abstract class Tile {
     public Coordinates getTileCoords() { return tileCoords; }
 
     public int hueristicCots() { return 0; };
+
+    public void setTileObstruction(Obstructions obs){
+        this.tileObstruction = obs;
+    }
+
+    public Obstructions getTileObstruction(){
+        return tileObstruction;
+    }
+
 }

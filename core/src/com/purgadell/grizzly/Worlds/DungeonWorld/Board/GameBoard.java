@@ -13,6 +13,8 @@ import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Generator.BoardGenerator;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.Coordinates;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileHighlighter;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Containers.*;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Obstructions.Barrels;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Obstructions.Obstructions;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.DungeonTile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.VoidTile;
@@ -49,9 +51,16 @@ public class GameBoard {
     public void loadAssets(Assets assetManager){
         Texture texture = assetManager.getTexture(Textures.TEST_TILE_DUNGEON);
         Texture voidTexture = assetManager.getTexture(Textures.TEST_VOID_TILE);
+        Texture objTexture = assetManager.getTexture(Textures.TEST_OBJ);
 
         for(Tile t : boardTiles){
-            if(t instanceof DungeonTile) t.setTileSprite(texture);
+            if(t instanceof DungeonTile){
+                t.setTileSprite(texture);
+                Obstructions obs = t.getTileObstruction();
+                if(obs != null){
+                    if(obs instanceof Barrels) obs.setSprite(objTexture);
+                }
+            }
             else t.setTileSprite(voidTexture);
         }
 
@@ -112,6 +121,11 @@ public class GameBoard {
 
     public void render(SpriteBatch batch){
         batch.setProjectionMatrix(boardCamera.getGameCamera().combined);
+        renderTiles(batch);
+//        renderObstructions(batch);
+    }
+
+    private void renderTiles(SpriteBatch batch){
         for(Tile t : boardTiles){
             if(t == null) continue;
             if(boardCamera.contains(t.getPosX(), t.getPosY()))
@@ -121,6 +135,14 @@ public class GameBoard {
 
         if(PearlGame.WIRERENDER) debugRender();
     }
+
+//    private void renderObstructions(SpriteBatch batch){
+//        for(Obstructions o : boardObstructs){
+//            if(o == null) continue;
+//            if(boardCamera.contains(o.getX(), o.getY()))
+//                o.render(batch);
+//        }
+//    }
 
     private void debugRender(){
         PearlGame.WIRERENDERER.setProjectionMatrix(boardCamera.getGameCamera().combined);
@@ -160,10 +182,6 @@ public class GameBoard {
 
     public int getBoardHeight(){
         return boardHeight;
-    }
-
-    public void setTileHighlighter(TileHighlighter th){
-        this.tileHighlighter = th;
     }
 
     public void setBoardTiles(LinkedList<Tile> tiles){

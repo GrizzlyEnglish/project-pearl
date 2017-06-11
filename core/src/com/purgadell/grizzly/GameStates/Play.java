@@ -15,6 +15,8 @@ public class Play extends GameState {
     public Play(GameStateManager manager) {
         super(manager);
         assetManager.queTextures(Textures.TEST_PACK);
+        assetManager.queTextures(Textures.DUNGEON_TILE_PACK);
+        assetManager.queTextures(Textures.OBS_PACK);
         dungeonWorldMap = new Dungeon(manager);
     }
 

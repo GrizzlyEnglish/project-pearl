@@ -22,12 +22,14 @@ public class TilePlacerGenerator {
     private int boardHeight;
 
     private Random r;
+    private TileGetter tGetter;
 
     public TilePlacerGenerator(GameBoard gameBoard){
         this.gameBoard = gameBoard;
         this.boardHeight = gameBoard.getBoardHeight();
         this.boardWidth = gameBoard.getBoardWidth();
         this.r = new Random();
+        this.tGetter = new TileGetter(boardWidth, boardHeight);
     }
 
     public LinkedList<Coordinates> generateTiles(){
@@ -99,7 +101,7 @@ public class TilePlacerGenerator {
 
         for(Coordinates c : queued){
             LinkedList<Coordinates> border = tileGetter.borderAroundTile(c, 1);
-            int connections = listWithinListCount(border, queued);
+            int connections = tGetter.listWithinListCount(border, queued);
             if(connections == 2) sc.push(c);
         }
 
@@ -108,7 +110,7 @@ public class TilePlacerGenerator {
 
     private boolean connectRoom(TileGetter tileGetter, Coordinates centerRoom, int roomRadius, LinkedList<Coordinates> queued){
         LinkedList<Coordinates> outsideRoom = tileGetter.borderAroundTile(centerRoom, roomRadius+1);
-        int connections = listWithinListCount(outsideRoom, queued);
+        int connections = tGetter.listWithinListCount(outsideRoom, queued);
 
         if(connections == 1){
             /* TODO: rce--
@@ -145,10 +147,7 @@ public class TilePlacerGenerator {
         LinkedList<Coordinates> deadEnds = new LinkedList<Coordinates>();
 
         for(Coordinates c : queued){
-            LinkedList<Coordinates> border = tileGetter.borderAroundTile(c, 1);
-
-            int borderCount = listWithinListCount(border, queued);
-
+            int borderCount = tileGetter.tileConnectionsCount(c, queued);
             if(borderCount == 1) deadEnds.push(c);
         }
 
@@ -168,7 +167,7 @@ public class TilePlacerGenerator {
             for(int y = 0; y < boardHeight; y+=blockH){
                 LinkedList<Coordinates> block = tileGetter.boardBox(x,y,blockW,blockH);
 
-                if(!listWithinList(block, queued)){
+                if(!tGetter.listWithinList(block, queued)){
                     blocks.push(block);
                     System.out.println("Added Block");
                 }
@@ -176,38 +175,6 @@ public class TilePlacerGenerator {
         }
 
         return blocks;
-    }
-
-    private boolean listWithinList(LinkedList<Coordinates> list, LinkedList<Coordinates> within){
-        for(Coordinates bC : list){
-            if(isWithinList(bC, within)){
-                System.out.println(bC.ToString() + " is within list");
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private int listWithinListCount(LinkedList<Coordinates> list, LinkedList<Coordinates> within){
-        int count = 0;
-
-        for(Coordinates bC : list){
-            if(isWithinList(bC, within)){
-                count++;
-            }
-        }
-        return count;
-    }
-
-    private boolean isWithinList(Coordinates c, LinkedList<Coordinates> list){
-        for(Coordinates q: list){
-            if(c.coords.row == q.coords.row &&
-                    c.coords.column == q.coords.column){
-                return true;
-            }
-        }
-
-        return false;
     }
 
     private void buildBranch(TileGetter tileGetter, LinkedList<Coordinates> emptyBlock, LinkedList<Coordinates> queued){
@@ -225,7 +192,7 @@ public class TilePlacerGenerator {
 
             LinkedList<Coordinates> border = tileGetter.borderAroundTile(end, 1);
 
-            int borders = listWithinListCount(border, queued);
+            int borders = tGetter.listWithinListCount(border, queued);
 
             searching = borders > 3;
         }
@@ -354,7 +321,7 @@ public class TilePlacerGenerator {
         LinkedList<Coordinates> path = PathFinder.getPath(a, b, boardWidth, boardHeight);
 
         for(Coordinates c : path){
-            if(quitOnOverlap && isWithinList(c, queuedCoords)) break;
+            if(quitOnOverlap && tGetter.isWithinList(c, queuedCoords)) break;
             queTile(queuedCoords, c);
         }
 

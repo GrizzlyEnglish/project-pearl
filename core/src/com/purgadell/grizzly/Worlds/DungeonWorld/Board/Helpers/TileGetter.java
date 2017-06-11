@@ -18,6 +18,12 @@ public class TileGetter {
         this.boardHeight = boardHeight;
     }
 
+    public int tileConnectionsCount(Coordinates c, LinkedList<Coordinates> list){
+        LinkedList<Coordinates> border = borderAroundTile(c, 1);
+
+        return listWithinListCount(border, list);
+    }
+
     public LinkedList<Coordinates> borderAroundTile(Coordinates cords, int radius){
         LinkedList<Coordinates> cordsRadius = new LinkedList<Coordinates>();
 
@@ -81,6 +87,38 @@ public class TileGetter {
         for(int i = 0; i < Variables.TIKE_SIDES; i++){
             Coordinates t = getCords(a, i);
             if(t.coords.column == b.coords.column && t.coords.row == b.coords.row) return true;
+        }
+
+        return false;
+    }
+
+    public boolean listWithinList(LinkedList<Coordinates> list, LinkedList<Coordinates> within) {
+        for (Coordinates bC : list) {
+            if (isWithinList(bC, within)) {
+                System.out.println(bC.ToString() + " is within list");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public int listWithinListCount(LinkedList<Coordinates> list, LinkedList<Coordinates> within){
+        int count = 0;
+
+        for(Coordinates bC : list){
+            if(isWithinList(bC, within)){
+                count++;
+            }
+        }
+        return count;
+    }
+
+    public boolean isWithinList(Coordinates c, LinkedList<Coordinates> list){
+        for(Coordinates q: list){
+            if(c.coords.row == q.coords.row &&
+                    c.coords.column == q.coords.column){
+                return true;
+            }
         }
 
         return false;

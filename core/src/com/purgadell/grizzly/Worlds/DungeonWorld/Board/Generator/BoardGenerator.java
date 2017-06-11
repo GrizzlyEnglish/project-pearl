@@ -25,7 +25,6 @@ public class BoardGenerator {
         LinkedList<Coordinates> coords = new TilePlacerGenerator(gameBoard).generateTiles();
         LinkedList<Obstructions> obstructs = new BoardItemGenerator(gameBoard).generateItems(coords);
 
-
         Tile[][] tileArr = placeQueued(coords);
         Obstructions[][] obsArr = placeObs(obstructs);
 

@@ -8,16 +8,10 @@ import com.purgadell.grizzly.Input.InputAction;
 import com.purgadell.grizzly.PearlGame;
 import com.purgadell.grizzly.Resources.Assets;
 import com.purgadell.grizzly.Resources.Textures;
-import com.purgadell.grizzly.Resources.Variables;
-import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Generator.BoardGenerator;
-import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.Coordinates;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileHighlighter;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Containers.*;
-import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Obstructions.Barrels;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Obstructions.Obstructions;
-import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.DungeonTile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
-import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.VoidTile;
 
 import java.util.LinkedList;
 
@@ -49,22 +43,17 @@ public class GameBoard {
     }
 
     public void loadAssets(Assets assetManager){
-        Texture texture = assetManager.getTexture(Textures.TEST_TILE_DUNGEON);
-        Texture voidTexture = assetManager.getTexture(Textures.TEST_VOID_TILE);
-        Texture objTexture = assetManager.getTexture(Textures.TEST_OBJ);
-
         for(Tile t : boardTiles){
-            if(t instanceof DungeonTile){
-                t.setTileSprite(texture);
-                Obstructions obs = t.getTileObstruction();
-                if(obs != null){
-                    if(obs instanceof Barrels) obs.setSprite(objTexture);
-                }
+            Texture texture = assetManager.getTexture(t);
+            t.setTileSprite(texture);
+            Obstructions obs = t.getTileObstruction();
+            if(obs != null){
+                Texture obsTexture = assetManager.getTexture(obs);
+                obs.setSprite(obsTexture);
             }
-            else t.setTileSprite(voidTexture);
         }
 
-        texture = assetManager.getTexture(Textures.TEST_SELECTED);
+        Texture texture = assetManager.getTexture(Textures.TEST_SELECTED);
         tileHighlighter = new TileHighlighter(texture);
     }
 
@@ -122,7 +111,6 @@ public class GameBoard {
     public void render(SpriteBatch batch){
         batch.setProjectionMatrix(boardCamera.getGameCamera().combined);
         renderTiles(batch);
-//        renderObstructions(batch);
     }
 
     private void renderTiles(SpriteBatch batch){
@@ -135,14 +123,6 @@ public class GameBoard {
 
         if(PearlGame.WIRERENDER) debugRender();
     }
-
-//    private void renderObstructions(SpriteBatch batch){
-//        for(Obstructions o : boardObstructs){
-//            if(o == null) continue;
-//            if(boardCamera.contains(o.getX(), o.getY()))
-//                o.render(batch);
-//        }
-//    }
 
     private void debugRender(){
         PearlGame.WIRERENDERER.setProjectionMatrix(boardCamera.getGameCamera().combined);

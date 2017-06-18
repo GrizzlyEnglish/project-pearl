@@ -16,4 +16,6 @@ public class Variables {
     public static final float HOVER_OFFSET = 20;
     public static final int TIKE_SIDES = 6;
 
+    public static final float ENTITY_OFFSET = TILE_HEIGHT_OFFSET - 45;
+
 }

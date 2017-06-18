@@ -10,11 +10,13 @@ public class Textures {
     public static String TEST_TILE_DUNGEON = "Tests/test_tile_4.png";
     public static String TEST_VOID_TILE = "Tests/test_tile_void.png";
     public static String TEST_CHAR = "Tests/test_char.png";
+    public static String TEST_CHAR1 = "Tests/test_char1.png";
     public static String TEST_SELECTED = "Tests/test_selected_tile.png";
     public static String TEST_OBJ = "Tests/test_tile_obj.png";
+    public static String TEST_MOVEMENT = "Tests/test_movement.png";
 
     public static String[] TEST_PACK = new String[] {TEST_TILE, TEST_SELECTED, TEST_CHAR,
-        TEST_VOID_TILE, TEST_TILE_DUNGEON, TEST_OBJ};
+        TEST_VOID_TILE, TEST_TILE_DUNGEON, TEST_OBJ, TEST_CHAR1, TEST_MOVEMENT};
 
     public static String DUNGEON_TILE_1 = "Tiles/dungeon_tile_1.png";
     public static String DUNGEON_TILE_2 = "Tiles/dungeon_tile_2.png";

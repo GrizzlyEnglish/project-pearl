@@ -45,4 +45,9 @@ public class Dungeon extends World {
     public void render(SpriteBatch batch){
         board.render(batch);
     }
+
+    @Override
+    public void resize(float width, float height) {
+        board.resize(width,height);
+    }
 }

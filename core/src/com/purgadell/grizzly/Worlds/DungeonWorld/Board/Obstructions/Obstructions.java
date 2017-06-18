@@ -51,6 +51,14 @@ public abstract class Obstructions {
         this.sprite.setPosition(x, y);
     }
 
+    public void offsetSpritePos(float xOffset, float yOffset){
+        this.sprite.setPosition(obstructCoords.position.x + xOffset, obstructCoords.position.y + yOffset);
+    }
+
+    public void resetSpritePos(){
+        this.sprite.setPosition(obstructCoords.position.x, obstructCoords.position.y);
+    }
+
     public float getX(){
         return obstructCoords.position.x;
     }

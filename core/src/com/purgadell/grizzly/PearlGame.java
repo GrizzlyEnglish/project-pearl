@@ -64,7 +64,13 @@ public class PearlGame extends ApplicationAdapter {
         assetManager.dispose();
 	}
 
-	public SpriteBatch getSpriteBatch() { return spriteBatch; }
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+        gManager.resize(width,height);
+    }
+
+    public SpriteBatch getSpriteBatch() { return spriteBatch; }
     public Assets getAssetManager() { return assetManager; }
     public InputHandler getInputHandler() {return inputHandler;}
 }

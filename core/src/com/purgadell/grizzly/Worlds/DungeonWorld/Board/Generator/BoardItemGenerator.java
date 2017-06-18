@@ -66,7 +66,7 @@ public class BoardItemGenerator {
     }
 
     private boolean hasBorderObs(Coordinates c, LinkedList<Coordinates> queuedObs){
-        LinkedList<Coordinates> border = tGetter.borderAroundTile(c, 1);
+        LinkedList<Coordinates> border = tGetter.borderAroundCoordinate(c, 1);
         int count = tGetter.listWithinListCount(border, queuedObs);
         return count > 0;
     }

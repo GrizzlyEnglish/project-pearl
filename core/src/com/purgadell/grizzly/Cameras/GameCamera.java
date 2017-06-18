@@ -46,6 +46,15 @@ public abstract class GameCamera {
         moveToDefaultPos();
     }
 
+    public void resize(float width, float height){
+        this.camWidth = width;
+        this.camHeight = height;
+        this.gameCamera.viewportWidth = camWidth;
+        this.gameCamera.viewportHeight = camHeight;
+        this.gameCamera.update();
+        System.out.println("Resized to " + width + " " + height);
+    }
+
     public void moveToDefaultPos(){
         gameCamera.position.set(0,0,0);
         gameCamera.update();

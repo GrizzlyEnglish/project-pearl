@@ -43,17 +43,17 @@ public class Play extends GameState {
     }
 
     @Override
+    public void resize(int width, int height) {
+        dungeonWorldMap.resize(width, height);
+    }
+
+    @Override
     public void loadAssets() {
         dungeonWorldMap.loadAssets(assetManager);
     }
 
     @Override
     public void show() {
-
-    }
-
-    @Override
-    public void resize(int width, int height) {
 
     }
 

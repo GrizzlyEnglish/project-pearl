@@ -2,17 +2,20 @@ package com.purgadell.grizzly.Worlds.DungeonWorld.Board;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector3;
 import com.purgadell.grizzly.Cameras.BoardCamera;
 import com.purgadell.grizzly.Input.InputAction;
 import com.purgadell.grizzly.PearlGame;
 import com.purgadell.grizzly.Resources.Assets;
-import com.purgadell.grizzly.Resources.Textures;
-import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileHighlighter;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Handlers.BoardHighlighterHelper;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Handlers.BoardInputHandler;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Handlers.EntityHandler;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileGetter;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Containers.*;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Obstructions.Obstructions;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Entities.Entity;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -26,9 +29,13 @@ public class GameBoard {
     private LinkedList<Path> boardPaths;
 
     private BoardCamera boardCamera;
+    private BoardInputHandler boardInputHandler;
+    private BoardHighlighterHelper boardHighlighter;
 
-    private TileHighlighter tileHighlighter;
+    private TileGetter tileGetter;
     private Tile hoveredTile;
+
+    private EntityHandler entityHandler;
 
     private int boardWidth;
     private int boardHeight;
@@ -36,10 +43,16 @@ public class GameBoard {
     public GameBoard(int w, int l){
         boardHeight = l;
         boardWidth = w;
+
         boardCamera = new BoardCamera(800,600);
+        tileGetter = new TileGetter(w, l);
+        boardInputHandler = new BoardInputHandler(this);
+        boardHighlighter = new BoardHighlighterHelper(this);
 
         boardRooms = new LinkedList<Room>();
         boardPaths = new LinkedList<Path>();
+
+        entityHandler = new EntityHandler();
     }
 
     public void loadAssets(Assets assetManager){
@@ -53,75 +66,42 @@ public class GameBoard {
             }
         }
 
-        Texture texture = assetManager.getTexture(Textures.TEST_SELECTED);
-        tileHighlighter = new TileHighlighter(texture);
+        entityHandler.loadAssets(assetManager);
+        boardHighlighter.loadAssets(assetManager);
+    }
+
+    public void resize(float width, float height){
+        boardCamera.resize(width, height);
     }
 
     public void handleInput(InputAction action){
-        Vector3 unprojectedCords;
-
-        switch (action.actionCode){
-            case InputAction.DRAGGED_MOUSE:
-                boardCamera.panCamera(action.mouseCords);
-                break;
-            case InputAction.SCROLL_MOUSE:
-                boardCamera.zoomCamera(null, action.zoomAmount);
-                break;
-            case InputAction.CLICKED_MOUSE:
-                unprojectedCords = boardCamera.unprojectCords(action.mouseCords);
-                selectTile(unprojectedCords);
-                break;
-            case InputAction.MOUSE:
-                unprojectedCords = boardCamera.unprojectCords(action.mouseCords);
-                hoverTile(unprojectedCords);
-                break;
-        }
-    }
-
-    private void hoverTile(Vector3 cords){
-        Tile t = findTile(cords);
-
-        if(hoveredTile != null) hoveredTile.setHovered(false);
-        if(t != null) {
-            hoveredTile = t;
-            hoveredTile.setHovered(true);
-        }
-    }
-
-    private Tile findTile(Vector3 cords){
-        //TODO: rce--Speed this up
-        for(Tile t : boardTiles){
-            if(t == null) continue;
-            if(t.contains(cords.x, cords.y)){
-                return t;
-            }
-        }
-
-        return null;
-    }
-
-    private void selectTile(Vector3 cords){
-        Tile t = findTile(cords);
-        if(t != null) {
-            t.toggleSelected();
-            tileHighlighter.setTile(t);
-        }
+        boardInputHandler.handleInput(action);
     }
 
     public void render(SpriteBatch batch){
         batch.setProjectionMatrix(boardCamera.getGameCamera().combined);
+
         renderTiles(batch);
+        boardHighlighter.render(batch);
+        renderEntities(batch);
     }
 
     private void renderTiles(SpriteBatch batch){
-        for(Tile t : boardTiles){
+        Iterator<Tile> iterator = boardTiles.descendingIterator();
+
+        while(iterator.hasNext()){
+            Tile t = iterator.next();
+
             if(t == null) continue;
             if(boardCamera.contains(t.getPosX(), t.getPosY()))
                 t.render(batch);
         }
-        tileHighlighter.render(batch);
 
         if(PearlGame.WIRERENDER) debugRender();
+    }
+
+    private void renderEntities(SpriteBatch batch){
+        entityHandler.render(batch);
     }
 
     private void debugRender(){
@@ -131,6 +111,7 @@ public class GameBoard {
             if(boardCamera.contains(t.getPosX(), t.getPosY()))
                 t.renderWireFrame(PearlGame.WIRERENDERER);
         }
+        entityHandler.renderWireFrame(PearlGame.WIRERENDERER);
     }
 
     public void update(float dt){
@@ -166,6 +147,34 @@ public class GameBoard {
 
     public void setBoardTiles(LinkedList<Tile> tiles){
         this.boardTiles = tiles;
+    }
+
+    public LinkedList<Tile> getBoardTiles(){
+        return boardTiles;
+    }
+
+    public void setEntities(LinkedList<Entity> entities){
+        for(Entity e : entities) entityHandler.addEntity(e);
+    }
+
+    public BoardCamera getBoardCamera(){
+        return boardCamera;
+    }
+
+    public void setHoveredTile(Tile t){
+        this.hoveredTile = t;
+    }
+
+    public Tile getHoveredTile(){
+        return this.hoveredTile;
+    }
+
+    public TileGetter getTileGetter(){
+        return tileGetter;
+    }
+
+    public BoardHighlighterHelper getBoardHighlighter(){
+        return boardHighlighter;
     }
 
 }

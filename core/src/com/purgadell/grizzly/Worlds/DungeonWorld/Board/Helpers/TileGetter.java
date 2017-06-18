@@ -1,6 +1,9 @@
 package com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers;
 
+import com.badlogic.gdx.math.Vector3;
 import com.purgadell.grizzly.Resources.Variables;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.VoidTile;
 
 import java.util.LinkedList;
 
@@ -18,13 +21,46 @@ public class TileGetter {
         this.boardHeight = boardHeight;
     }
 
+    public Tile findTileInList(Vector3 cords, LinkedList<Tile> boardTiles){
+        //TODO: rce--Optimize this, we could calculate what tiles to look at in a radius of 1, then loop through
+        for(Tile t : boardTiles){
+            if(t == null) continue;
+            if(t.contains(cords.x, cords.y)){
+                return t;
+            }
+        }
+
+        return null;
+    }
+
     public int tileConnectionsCount(Coordinates c, LinkedList<Coordinates> list){
-        LinkedList<Coordinates> border = borderAroundTile(c, 1);
+        LinkedList<Coordinates> border = borderAroundCoordinate(c, 1);
 
         return listWithinListCount(border, list);
     }
+    
+    public LinkedList<Tile> borderAroundTile(LinkedList<Tile> tiles, Tile t, int radius){
+        LinkedList<Tile> borderTiles = new LinkedList<Tile>();
 
-    public LinkedList<Coordinates> borderAroundTile(Coordinates cords, int radius){
+        for(int i = 0; i < radius; i++){
+            LinkedList<Coordinates> coordinates = borderAroundCoordinate(t.getTileCoords(), i);
+
+            for(Coordinates c : coordinates){
+                int pos = getListPosition(c.coords.row, c.coords.column);
+                Tile tmp = tiles.get(pos);
+                if(tmp != null && !(tmp instanceof VoidTile)) borderTiles.push(tmp);
+            }
+        }
+
+        return borderTiles;
+    }
+
+    //Might give the opposite tile
+    private int getListPosition(int x, int y){
+        return (y * boardWidth) + x;
+    }
+
+    public LinkedList<Coordinates> borderAroundCoordinate(Coordinates cords, int radius){
         LinkedList<Coordinates> cordsRadius = new LinkedList<Coordinates>();
 
         int x = cords.coords.row;
@@ -73,7 +109,7 @@ public class TileGetter {
         LinkedList<Coordinates> cordsRadius = new LinkedList<Coordinates>();
 
         for(int i = 1; i <= radius; i++){
-            LinkedList<Coordinates> temp = borderAroundTile(c, i);
+            LinkedList<Coordinates> temp = borderAroundCoordinate(c, i);
 
             for(Coordinates c2 : temp){
                 cordsRadius.push(c2);

@@ -77,7 +77,7 @@ public class TilePlacerGenerator {
             int radius = r.nextInt(3) + 1;
 
             for(int i = 0; i <= radius; i++){
-                LinkedList<Coordinates> room = tileGetter.borderAroundTile(end, i);
+                LinkedList<Coordinates> room = tileGetter.borderAroundCoordinate(end, i);
 
                 for(Coordinates rT: room){
                     queued.push(rT);
@@ -100,7 +100,7 @@ public class TilePlacerGenerator {
         LinkedList<Coordinates> sc = new LinkedList<Coordinates>();
 
         for(Coordinates c : queued){
-            LinkedList<Coordinates> border = tileGetter.borderAroundTile(c, 1);
+            LinkedList<Coordinates> border = tileGetter.borderAroundCoordinate(c, 1);
             int connections = tGetter.listWithinListCount(border, queued);
             if(connections == 2) sc.push(c);
         }
@@ -109,7 +109,7 @@ public class TilePlacerGenerator {
     }
 
     private boolean connectRoom(TileGetter tileGetter, Coordinates centerRoom, int roomRadius, LinkedList<Coordinates> queued){
-        LinkedList<Coordinates> outsideRoom = tileGetter.borderAroundTile(centerRoom, roomRadius+1);
+        LinkedList<Coordinates> outsideRoom = tileGetter.borderAroundCoordinate(centerRoom, roomRadius+1);
         int connections = tGetter.listWithinListCount(outsideRoom, queued);
 
         if(connections == 1){
@@ -190,7 +190,7 @@ public class TilePlacerGenerator {
 
             if(end.coords.row == start.coords.row || end.coords.column == start.coords.column) continue;
 
-            LinkedList<Coordinates> border = tileGetter.borderAroundTile(end, 1);
+            LinkedList<Coordinates> border = tileGetter.borderAroundCoordinate(end, 1);
 
             int borders = tGetter.listWithinListCount(border, queued);
 

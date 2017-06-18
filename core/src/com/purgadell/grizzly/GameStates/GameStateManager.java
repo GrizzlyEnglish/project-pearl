@@ -41,6 +41,13 @@ public class GameStateManager {
         else gameStates.peek().render(delta);
     }
 
+    public void resize(int width, int height){
+        if (loadingState != null){
+            loadingState.resize(width, height);
+        }
+        else gameStates.peek().resize(width, height);
+    }
+
     public void debugRender(float delta){
         if (loadingState != null){
             loadingState.render(delta);

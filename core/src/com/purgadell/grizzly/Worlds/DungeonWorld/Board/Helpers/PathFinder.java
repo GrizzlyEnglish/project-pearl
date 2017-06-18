@@ -43,7 +43,7 @@ public class PathFinder {
 
             if(on_node.cords.coords.Equals(end)) return calcPath(on_node);
 
-            LinkedList<Coordinates> tiles_around = tg.borderAroundTile(on_node.cords, 1);
+            LinkedList<Coordinates> tiles_around = tg.borderAroundCoordinate(on_node.cords, 1);
 
             for(Coordinates c : tiles_around){
                 int additional_cost = 0;

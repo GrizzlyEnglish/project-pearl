@@ -24,5 +24,6 @@ public abstract class World {
     public abstract void loadAssets(Assets assetManager);
     public abstract void update(float dt);
     public abstract void render(SpriteBatch batch);
+    public abstract void resize(float width, float height);
 
 }

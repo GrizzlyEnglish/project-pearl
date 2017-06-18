@@ -6,6 +6,7 @@ import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Obstructions.Obstructions
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.DungeonTile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.VoidTile;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Entities.Entity;
 
 import java.util.LinkedList;
 
@@ -29,8 +30,10 @@ public class BoardGenerator {
         Obstructions[][] obsArr = placeObs(obstructs);
 
         LinkedList<Tile> tiles = getList(tileArr, obsArr);
+        LinkedList<Entity> entities = new EntityGenerator(gameBoard).generateEntities(tiles);
 
         gameBoard.setBoardTiles(tiles);
+        gameBoard.setEntities(entities);
 
         return gameBoard;
     }
@@ -43,8 +46,9 @@ public class BoardGenerator {
                 if(boardTiles[w][l] == null) boardTiles[w][l] = new VoidTile(w,l);
                 else if(boardObs[w][l] != null){
                     boardTiles[w][l].setTileObstruction(boardObs[w][l]);
+                    boardObs[w][l].setTile(boardTiles[w][l]);
                 }
-                tiles.push(boardTiles[w][l]);
+                tiles.addLast(boardTiles[w][l]);
             }
         }
 

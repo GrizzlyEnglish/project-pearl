@@ -11,6 +11,7 @@ import com.purgadell.grizzly.PearlGame;
 import com.purgadell.grizzly.Resources.Variables;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.Coordinates;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Obstructions.Obstructions;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Entities.Entity;
 
 /**
  * Created by Ryan English on 5/13/2017.
@@ -19,6 +20,8 @@ import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Obstructions.Obstructions
 public abstract class Tile {
 
     private Obstructions tileObstruction;
+    private Entity tileEntity;
+
     private Coordinates tileCoords;
 
     private Triangle topTri;
@@ -154,13 +157,16 @@ public abstract class Tile {
     public boolean isVisible() { return isVisible; }
 
     public void setHovered(boolean b) {
+        //TODO: rce- Make this better
         isHovered = b;
         if(isHovered){
             tileSprite.setPosition(tileCoords.position.x, tileCoords.position.y + Variables.HOVER_OFFSET);
-            if(tileObstruction != null) tileObstruction.setSpritePos(tileCoords.position.x, tileCoords.position.y + Variables.HOVER_OFFSET);
+            if(tileObstruction != null) tileObstruction.offsetSpritePos(0, Variables.HOVER_OFFSET);
+            if(tileEntity != null) tileEntity.offsetSpritePos(0, Variables.HOVER_OFFSET);
         } else {
             tileSprite.setPosition(tileCoords.position.x, tileCoords.position.y);
-            if(tileObstruction != null) tileObstruction.setSpritePos(tileCoords.position.x, tileCoords.position.y);
+            if(tileObstruction != null) tileObstruction.resetSpritePos();
+            if(tileEntity != null) tileEntity.resetSpritePos();
         }
     }
 
@@ -184,8 +190,32 @@ public abstract class Tile {
         this.tileObstruction = obs;
     }
 
+    public void removeTileObstruction(){
+        this.tileObstruction = null;
+    }
+
     public Obstructions getTileObstruction(){
         return tileObstruction;
+    }
+
+    public boolean hasObstructions(){
+        return tileObstruction != null;
+    }
+
+    public void setTileEntity(Entity e){
+        this.tileEntity = e;
+    }
+
+    public void removeTileEntity(){
+        this.tileEntity = null;
+    }
+
+    public boolean hasEntity(){
+        return tileEntity != null;
+    }
+
+    public Entity getEntity(){
+        return tileEntity;
     }
 
 }

@@ -29,7 +29,7 @@ public abstract class Entity {
     protected boolean isMoving;
 
     public Entity(Coordinates c){
-        this.coordinates = c;
+        setupEntity(null, null, c);
     }
 
     public Entity(Tile t){
@@ -49,15 +49,15 @@ public abstract class Entity {
     }
 
     private void setupEntity(Texture t, Tile tile, Coordinates c){
+        this.isVisible = true;
+        this.entityStats = new Stats();
+
         if(tile != null) {
             this.onTile = tile;
             setCoordinates(onTile);
         } else if(c != null) this.coordinates = c;
 
         if(t != null) setSprite(t);
-
-        this.isVisible = true;
-        this.entityStats = new Stats();
     }
 
     public void setSprite(Texture t){
@@ -84,6 +84,15 @@ public abstract class Entity {
 
     private void setSpritePos(float x, float y){
         this.sprite.setPosition(x,y);
+    }
+
+    public void placeOnTile(Tile t){
+        onTile.removeTileEntity();
+        onTile = t;
+        onTile.setTileEntity(this);
+
+        setCoordinates(onTile);
+        setSpriteCoords();
     }
 
     public boolean moveToTile(float dt){

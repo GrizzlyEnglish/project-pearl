@@ -64,12 +64,36 @@ public class BoardHighlighterHelper {
     }
 
     public void setHighlightedTile(Tile t){
-        selectedTile = t;
+        t.toggleSelected();
+        if(t.isSelected()){
+            selectedTile = t;
 
-        Entity ent = selectedTile.getEntity();
-        if (ent != null){
-            setupMovement(ent);
-        } else movementTiles = null;
+            Entity ent = selectedTile.getEntity();
+            if (ent != null && selectedTile.isSelected()){
+                setupMovement(ent);
+            } else movementTiles = null;
+        } else clear();
+    }
+
+    public Tile getSelectedTile(){
+        return selectedTile;
+    }
+
+    public LinkedList<Tile> getMovementTiles(){
+        return movementTiles;
+    }
+
+    public boolean queuedMovement(){
+        return movementTiles != null;
+    }
+
+    public boolean selectedTile(){
+        return selectedTile != null;
+    }
+
+    public void clear(){
+        movementTiles = null;
+        selectedTile = null;
     }
 
 }

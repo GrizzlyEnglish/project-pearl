@@ -57,13 +57,22 @@ public class BoardInputHandler {
     }
 
     private void selectTile(Vector3 cords){
-        Tile t = tileGetter.findTileInList(cords, gameBoard.getBoardTiles());
-
-        if(t != null) {
-            t.toggleSelected();
-            gameBoard.getBoardHighlighter().setHighlightedTile(t);
-
+        Tile t;
+        BoardHighlighterHelper highlighter = gameBoard.getBoardHighlighter();
+        boolean queuedMovement = highlighter.queuedMovement();
+        if(queuedMovement){
+            t = tileGetter.findTileInList(cords, highlighter.getMovementTiles());
+            if(t != null){
+                Tile origin = highlighter.getSelectedTile();
+                System.out.println("Moving from " + origin.getTileCoords().ToString() + " to " + t.getTileCoords().ToString());
+                origin.getEntity().placeOnTile(t);
+                highlighter.clear();
+            }
         }
+
+        t = tileGetter.findTileInList(cords, gameBoard.getBoardTiles());
+
+        if(t != null) gameBoard.getBoardHighlighter().setHighlightedTile(t);
     }
 
 }

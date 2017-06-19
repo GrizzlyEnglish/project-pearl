@@ -24,7 +24,7 @@ public class TileGetter {
     public Tile findTileInList(Vector3 cords, LinkedList<Tile> boardTiles){
         //TODO: rce--Optimize this, we could calculate what tiles to look at in a radius of 1, then loop through
         for(Tile t : boardTiles){
-            if(t == null) continue;
+            if(t == null || (t instanceof VoidTile)) continue;
             if(t.contains(cords.x, cords.y)){
                 return t;
             }

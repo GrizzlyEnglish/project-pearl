@@ -49,6 +49,14 @@ public class Assets{
         return randomTextureInPack(pack);
     }
 
+    public Texture[] getTexturePack(String[] pack) {
+        Texture[] tex = new Texture[pack.length];
+        for(int i = 0; i < pack.length; i++){
+            tex[i] = getTexture(pack[i]);
+        }
+        return tex;
+    }
+
     public Texture randomTextureInPack(String[] pack){
         Random r = new Random();
         int loc = r.nextInt(pack.length);

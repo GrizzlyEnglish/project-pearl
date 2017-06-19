@@ -119,6 +119,7 @@ public class GameBoard {
             if(t == null) continue;
             t.update(dt);
         }
+        boardHighlighter.update(dt);
     }
 
     public void addRoom(Room r){

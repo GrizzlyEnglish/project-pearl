@@ -1,6 +1,7 @@
 package com.purgadell.grizzly.Worlds.DungeonWorld.Board.Handlers;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.purgadell.grizzly.Resources.Assets;
 import com.purgadell.grizzly.Resources.Textures;
@@ -18,6 +19,7 @@ public class BoardHighlighterHelper {
 
     private GameBoard gameBoard;
 
+    private Animation<Texture> movementAnimation;
     private Texture movementHighlighter;
     private Texture selectedHighlighter;
 
@@ -26,13 +28,21 @@ public class BoardHighlighterHelper {
 
     private static final float SELECTED_OFFSET = 25;
 
+    private float movementStateTime = 0f;
+
     public BoardHighlighterHelper(GameBoard gameBoard){
         this.gameBoard = gameBoard;
     }
 
     public void loadAssets(Assets assets){
         selectedHighlighter = assets.getTexture(Textures.TEST_SELECTED);
-        movementHighlighter = assets.getTexture(Textures.TEST_MOVEMENT);
+
+        Texture[] textures = assets.getTexturePack(Textures.TEST_MOVEMENT);
+        movementAnimation = new Animation<Texture>(2.5f, textures);
+    }
+
+    public void update(float dt){
+        movementStateTime += dt;
     }
 
     public void render(SpriteBatch batch){
@@ -55,7 +65,7 @@ public class BoardHighlighterHelper {
         float x = t.getTileCoords().position.x - 12;
         float y = t.isHovered() ? t.getPosY() + SELECTED_OFFSET : t.getPosY();
 
-        batch.draw(movementHighlighter, x, y);
+        batch.draw(movementAnimation.getKeyFrame(movementStateTime), x, y);
     }
 
     public void setupMovement(Entity ent){
@@ -94,6 +104,7 @@ public class BoardHighlighterHelper {
     public void clear(){
         movementTiles = null;
         selectedTile = null;
+        movementStateTime = 0;
     }
 
 }

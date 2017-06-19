@@ -11,12 +11,19 @@ public class Textures {
     public static String TEST_VOID_TILE = "Tests/test_tile_void.png";
     public static String TEST_CHAR = "Tests/test_char.png";
     public static String TEST_CHAR1 = "Tests/test_char1.png";
-    public static String TEST_SELECTED = "Tests/test_selected_tile.png";
+    public static String TEST_SELECTED = "Tests/Test_Highlighters/test_selected_tile.png";
     public static String TEST_OBJ = "Tests/test_tile_obj.png";
-    public static String TEST_MOVEMENT = "Tests/test_movement.png";
+
+    public static String TEST_MOVEMENT_FULL = "Tests/Test_Highlighters/test_movement_full.png";
+    public static String TEST_MOVEMENT_1 = "Tests/Test_Highlighters/test_movement_1.png";
+    public static String TEST_MOVEMENT_2 = "Tests/Test_Highlighters/test_movement_2.png";
+    public static String TEST_MOVEMENT_3 = "Tests/Test_Highlighters/test_movement_3.png";
+    public static String[] TEST_MOVEMENT = new String[]{
+            TEST_MOVEMENT_1, TEST_MOVEMENT_2, TEST_MOVEMENT_3, TEST_MOVEMENT_FULL
+    };
 
     public static String[] TEST_PACK = new String[] {TEST_TILE, TEST_SELECTED, TEST_CHAR,
-        TEST_VOID_TILE, TEST_TILE_DUNGEON, TEST_OBJ, TEST_CHAR1, TEST_MOVEMENT};
+        TEST_VOID_TILE, TEST_TILE_DUNGEON, TEST_OBJ, TEST_CHAR1};
 
     public static String DUNGEON_TILE_1 = "Tiles/dungeon_tile_1.png";
     public static String DUNGEON_TILE_2 = "Tiles/dungeon_tile_2.png";
@@ -35,5 +42,6 @@ public class Textures {
 
     public static String CHEST_OPEN = "Obstructions/chest_closed.png";
     public static String CHEST_CLOSED = "Obstructions/chest_open.png";
+
 
 }

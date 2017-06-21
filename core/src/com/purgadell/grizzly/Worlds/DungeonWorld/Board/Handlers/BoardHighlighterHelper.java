@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.purgadell.grizzly.Resources.Assets;
 import com.purgadell.grizzly.Resources.Textures;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.GameBoard;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.HighlightTile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Entities.Entity;
 
@@ -19,16 +20,11 @@ public class BoardHighlighterHelper {
 
     private GameBoard gameBoard;
 
-    private Animation<Texture> movementAnimation;
-    private Texture movementHighlighter;
+    private Texture[] movementHighlighter;
     private Texture selectedHighlighter;
 
-    private LinkedList<Tile> movementTiles;
-    private Tile selectedTile;
-
-    private static final float SELECTED_OFFSET = 25;
-
-    private float movementStateTime = 0f;
+    private LinkedList<HighlightTile> movementTiles;
+    private HighlightTile selectedTile;
 
     public BoardHighlighterHelper(GameBoard gameBoard){
         this.gameBoard = gameBoard;
@@ -36,61 +32,55 @@ public class BoardHighlighterHelper {
 
     public void loadAssets(Assets assets){
         selectedHighlighter = assets.getTexture(Textures.TEST_SELECTED);
-
-        Texture[] textures = assets.getTexturePack(Textures.TEST_MOVEMENT);
-        movementAnimation = new Animation<Texture>(2.5f, textures);
+        movementHighlighter = assets.getTexturePack(Textures.TEST_MOVEMENT);
     }
 
     public void update(float dt){
-        movementStateTime += dt;
+        if(movementTiles != null){
+            for(HighlightTile ht : movementTiles) ht.update(dt);
+        }
+        if(selectedTile != null) selectedTile.update(dt);
     }
 
     public void render(SpriteBatch batch){
         if(movementTiles != null){
-            for(Tile t : movementTiles){
-                renderMovement(batch, t);
+            for(HighlightTile t : movementTiles){
+                t.render(batch);
             }
         } else if(selectedTile != null){
-            renderSelected(batch);
+            selectedTile.render(batch);
         }
-    }
-
-    private void renderSelected(SpriteBatch batch){
-        float x = selectedTile.getPosX() - SELECTED_OFFSET;
-        float y = selectedTile.isHovered() ? selectedTile.getPosY() + SELECTED_OFFSET : selectedTile.getPosY();
-        batch.draw(selectedHighlighter, x, y);
-    }
-
-    private void renderMovement(SpriteBatch batch, Tile t){
-        float x = t.getTileCoords().position.x - 12;
-        float y = t.isHovered() ? t.getPosY() + SELECTED_OFFSET : t.getPosY();
-
-        batch.draw(movementAnimation.getKeyFrame(movementStateTime), x, y);
     }
 
     public void setupMovement(Entity ent){
         int movementAllowance = ent.getEntityStats().getMovementAllowance();
-        movementTiles = gameBoard.getTileGetter().borderAroundTile(gameBoard.getBoardTiles(), selectedTile, movementAllowance);
+        LinkedList<Tile> tiles = gameBoard.getTileGetter().borderAroundTile(gameBoard.getBoardTiles(), selectedTile.getTile(), movementAllowance);
+        movementTiles = new LinkedList<HighlightTile>();
+        for(Tile t : tiles) {
+            movementTiles.push(new HighlightTile(t, movementHighlighter));
+        }
     }
 
     public void setHighlightedTile(Tile t){
         t.toggleSelected();
         if(t.isSelected()){
-            selectedTile = t;
+            selectedTile = new HighlightTile(t, selectedHighlighter);
 
-            Entity ent = selectedTile.getEntity();
-            if (ent != null && selectedTile.isSelected()){
+            Entity ent = t.getEntity();
+            if (ent != null && t.isSelected()){
                 setupMovement(ent);
             } else movementTiles = null;
         } else clear();
     }
 
     public Tile getSelectedTile(){
-        return selectedTile;
+        return selectedTile == null ? null : selectedTile.getTile();
     }
 
     public LinkedList<Tile> getMovementTiles(){
-        return movementTiles;
+        LinkedList<Tile> tiles = new LinkedList<Tile>();
+        for(HighlightTile ht : movementTiles) tiles.push(ht.getTile());
+        return tiles;
     }
 
     public boolean queuedMovement(){
@@ -104,7 +94,6 @@ public class BoardHighlighterHelper {
     public void clear(){
         movementTiles = null;
         selectedTile = null;
-        movementStateTime = 0;
     }
 
 }

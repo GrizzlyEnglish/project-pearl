@@ -2,6 +2,7 @@ package com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers;
 
 import com.badlogic.gdx.math.Vector3;
 import com.purgadell.grizzly.Resources.Variables;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.GameBoard;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.VoidTile;
 
@@ -38,15 +39,38 @@ public class TileGetter {
 
         return listWithinListCount(border, list);
     }
+
+    public LinkedList<Tile> availablePath(LinkedList<Tile> boardTiles, Tile onTile, int distance){
+        LinkedList<Tile> avTiles = new LinkedList<Tile>();
+
+        for(int r = 0; r < distance; r++){
+            LinkedList<Tile> border = borderAroundTile(boardTiles, onTile, r);
+            for(Tile t : border){
+                LinkedList<Tile> p = PathFinder.getPath(boardTiles, onTile, t, this);
+                if(p.size() > distance) continue;
+                boolean moveable = true;
+                for(Tile test : p){
+                    if(test == null || test instanceof VoidTile || (test.hasObstructions() && !test.equals(t))){
+                        moveable = false;
+                        break;
+                    }
+                }
+                if(moveable && !isWithinList(t, avTiles)) avTiles.push(t);
+            }
+        }
+
+        return avTiles;
+    }
     
     public LinkedList<Tile> borderAroundTile(LinkedList<Tile> tiles, Tile t, int radius){
         LinkedList<Tile> borderTiles = new LinkedList<Tile>();
 
-        for(int i = 0; i < radius; i++){
+        for(int i = 1; i <= radius; i++){
             LinkedList<Coordinates> coordinates = borderAroundCoordinate(t.getTileCoords(), i);
-
+            System.out.println(t.getTileCoords().ToString() +  "  "  + coordinates.size());
             for(Coordinates c : coordinates){
                 int pos = getListPosition(c.coords.row, c.coords.column);
+                System.out.println(c.ToString() + "  " + pos);
                 Tile tmp = tiles.get(pos);
                 if(tmp != null && !(tmp instanceof VoidTile)) borderTiles.push(tmp);
             }
@@ -153,6 +177,16 @@ public class TileGetter {
         for(Coordinates q: list){
             if(c.coords.row == q.coords.row &&
                     c.coords.column == q.coords.column){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isWithinList(Tile t, LinkedList<Tile> list){
+        for(Tile q: list){
+            if(t.equals(q)){
                 return true;
             }
         }

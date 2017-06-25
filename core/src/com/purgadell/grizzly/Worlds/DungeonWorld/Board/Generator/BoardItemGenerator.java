@@ -30,7 +30,7 @@ public class BoardItemGenerator {
         LinkedList<Coordinates> queuedObs = new LinkedList<Coordinates>();
         Random r = new Random();
 
-        int obsCount = queued.size() / 3;
+        int obsCount = queued.size() / 13;
         System.out.println("Adding " + obsCount + " obstructions");
         int count = 0;
         int looped = 0;

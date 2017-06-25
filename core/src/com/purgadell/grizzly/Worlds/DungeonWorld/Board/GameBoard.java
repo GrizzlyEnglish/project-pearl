@@ -9,6 +9,7 @@ import com.purgadell.grizzly.Resources.Assets;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Handlers.BoardHighlighterHelper;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Handlers.BoardInputHandler;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Handlers.EntityHandler;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.Coordinates;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileGetter;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Containers.*;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Obstructions.Obstructions;
@@ -176,6 +177,10 @@ public class GameBoard {
 
     public BoardHighlighterHelper getBoardHighlighter(){
         return boardHighlighter;
+    }
+
+    public static int COORDTOLISTPOS(Coordinates c, int boardWidth){
+        return c.coords.row + (c.coords.column * boardWidth);
     }
 
 }

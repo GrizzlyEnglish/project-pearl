@@ -199,7 +199,7 @@ public abstract class Tile {
     }
 
     public boolean hasObstructions(){
-        return tileObstruction != null;
+        return tileObstruction != null || tileEntity != null;
     }
 
     public void setTileEntity(Entity e){
@@ -216,6 +216,17 @@ public abstract class Tile {
 
     public Entity getEntity(){
         return tileEntity;
+    }
+
+    public boolean equals(Tile t){
+        return this.tileCoords.coords.Equals(t.getTileCoords());
+    }
+
+    public int movementCost(){
+        if(this instanceof VoidTile) return 1000;
+        else if(this.hasEntity()) return 300;
+        else if(this.hasObstructions()) return 15;
+        return 10;
     }
 
 }

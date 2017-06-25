@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.purgadell.grizzly.Resources.Assets;
 import com.purgadell.grizzly.Resources.Textures;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.GameBoard;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.PathFinder;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileGetter;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.HighlightTile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Entities.Entity;
@@ -54,7 +56,7 @@ public class BoardHighlighterHelper {
 
     public void setupMovement(Entity ent){
         int movementAllowance = ent.getEntityStats().getMovementAllowance();
-        LinkedList<Tile> tiles = gameBoard.getTileGetter().borderAroundTile(gameBoard.getBoardTiles(), selectedTile.getTile(), movementAllowance);
+        LinkedList<Tile> tiles = gameBoard.getTileGetter().availablePath(gameBoard.getBoardTiles(), selectedTile.getTile(), movementAllowance);
         movementTiles = new LinkedList<HighlightTile>();
         for(Tile t : tiles) {
             movementTiles.push(new HighlightTile(t, movementHighlighter));
@@ -62,6 +64,18 @@ public class BoardHighlighterHelper {
     }
 
     public void setHighlightedTile(Tile t){
+//        If you need to debug path finder use this
+//        if(selectedTile != null && !selectedTile.getTile().equals(t)){
+//            LinkedList<Tile> tiles = PathFinder.getPath(gameBoard.getBoardTiles(), selectedTile.getTile(),
+//                    t, new TileGetter(gameBoard.getBoardWidth(), gameBoard.getBoardHeight()));
+//
+//            movementTiles = new LinkedList<HighlightTile>();
+//            for(Tile t2 : tiles) {
+//                movementTiles.push(new HighlightTile(t2, movementHighlighter));
+//            }
+//            return;
+//        }
+
         t.toggleSelected();
         if(t.isSelected()){
             selectedTile = new HighlightTile(t, selectedHighlighter);

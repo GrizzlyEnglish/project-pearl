@@ -202,6 +202,10 @@ public abstract class Tile {
         return tileObstruction != null || tileEntity != null;
     }
 
+    public boolean hasObjectOnTile(){
+        return tileObstruction != null;
+    }
+
     public void setTileEntity(Entity e){
         this.tileEntity = e;
     }

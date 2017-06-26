@@ -121,7 +121,7 @@ public class PathFinder {
 
     private static void tilePath(LinkedList<Tile> boardTiles, TileGetter tg, Node on_node, Node end, LinkedList<Node> Open_List, LinkedList<Node> Closed_List){
         LinkedList<Tile> tiles_around = tg.borderAroundTile(boardTiles, on_node.tile, 1);
-        System.out.println(on_node.tile.getTileCoords().ToString() + "   " + tiles_around.size());
+
         for(Tile t : tiles_around){
             int additional_cost = 0;
 

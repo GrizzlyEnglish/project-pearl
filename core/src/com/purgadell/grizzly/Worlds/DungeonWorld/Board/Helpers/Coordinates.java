@@ -16,6 +16,10 @@ public class Coordinates {
             this.x = x;
             this.y = y;
         }
+
+        public double distance(Position p){
+            return Coordinates.distance(x,y,p.x,p.y);
+        }
     }
 
     public class BoardCoords {

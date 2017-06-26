@@ -8,6 +8,7 @@ import com.purgadell.grizzly.PearlGame;
 import com.purgadell.grizzly.Resources.Assets;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Handlers.BoardHighlighterHelper;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Handlers.BoardInputHandler;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Handlers.BoardMovementHandler;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Handlers.EntityHandler;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.Coordinates;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileGetter;
@@ -32,6 +33,7 @@ public class GameBoard {
     private BoardCamera boardCamera;
     private BoardInputHandler boardInputHandler;
     private BoardHighlighterHelper boardHighlighter;
+    private BoardMovementHandler boardMovement;
 
     private TileGetter tileGetter;
     private Tile hoveredTile;
@@ -49,6 +51,7 @@ public class GameBoard {
         tileGetter = new TileGetter(w, l);
         boardInputHandler = new BoardInputHandler(this);
         boardHighlighter = new BoardHighlighterHelper(this);
+        boardMovement = new BoardMovementHandler(this);
 
         boardRooms = new LinkedList<Room>();
         boardPaths = new LinkedList<Path>();
@@ -121,6 +124,7 @@ public class GameBoard {
             t.update(dt);
         }
         boardHighlighter.update(dt);
+        boardMovement.update(dt);
     }
 
     public void addRoom(Room r){
@@ -178,6 +182,10 @@ public class GameBoard {
     public BoardHighlighterHelper getBoardHighlighter(){
         return boardHighlighter;
     }
+
+    public BoardMovementHandler getBoardMovement(){ return boardMovement; }
+
+    public BoardInputHandler getBoardInputHandler() { return boardInputHandler; }
 
     public static int COORDTOLISTPOS(Coordinates c, int boardWidth){
         return c.coords.row + (c.coords.column * boardWidth);

@@ -16,6 +16,8 @@ public class BoardInputHandler {
     private GameBoard gameBoard;
     private TileGetter tileGetter;
 
+    private boolean ignoreInput = false;
+
     public BoardInputHandler(GameBoard gameboard){
         this.gameBoard = gameboard;
         this.tileGetter = gameboard.getTileGetter();
@@ -62,17 +64,35 @@ public class BoardInputHandler {
         boolean queuedMovement = highlighter.queuedMovement();
         if(queuedMovement){
             t = tileGetter.findTileInList(cords, highlighter.getMovementTiles());
+
             if(t != null){
                 Tile origin = highlighter.getSelectedTile();
                 System.out.println("Moving from " + origin.getTileCoords().ToString() + " to " + t.getTileCoords().ToString());
-                origin.getEntity().placeOnTile(t);
-                highlighter.clear();
+
+                gameBoard.getBoardMovement().moveEntity(origin.getEntity(), origin, t);
+
+//                if(t.hasObjectOnTile()){
+//                    t.removeTileObstruction();
+//                    //TODO: rce - Add destruction animation and do other stuff
+//                    System.out.println("Destroyed obstruction");
+//                }
+//
+//                origin.getEntity().placeOnTile(t);
+//                highlighter.clear();
             }
         }
 
         t = tileGetter.findTileInList(cords, gameBoard.getBoardTiles());
 
         if(t != null) gameBoard.getBoardHighlighter().setHighlightedTile(t);
+    }
+
+    public void pauseInputHandling(){
+        this.ignoreInput = true;
+    }
+
+    public void resumeInputHandling(){
+        this.ignoreInput = false;
     }
 
 }

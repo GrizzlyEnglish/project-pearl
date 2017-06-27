@@ -65,9 +65,14 @@ public abstract class Entity {
         setSpriteCoords();
     }
 
-    private void setCoordinates(Tile t){
+    public void setCoordinates(Tile t){
         Coordinates tCoords = t.getTileCoords();
+        setCoordinates(tCoords);
+    }
+
+    public void setCoordinates(Coordinates tCoords){
         this.coordinates = new Coordinates(tCoords.position.x, tCoords.position.y + Variables.ENTITY_OFFSET);
+        setSpriteCoords();
     }
 
     private void setSpriteCoords(){
@@ -83,6 +88,7 @@ public abstract class Entity {
     }
 
     private void setSpritePos(float x, float y){
+        if(this.sprite == null) return;
         this.sprite.setPosition(x,y);
     }
 
@@ -122,10 +128,6 @@ public abstract class Entity {
 
     public Coordinates getCoordinates(){
         return coordinates;
-    }
-
-    public void setCoordinates(Coordinates c){
-        this.coordinates = c;
     }
 
     public Stats getEntityStats(){

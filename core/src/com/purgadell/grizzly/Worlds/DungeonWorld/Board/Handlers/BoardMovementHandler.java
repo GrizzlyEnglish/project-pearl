@@ -2,6 +2,7 @@ package com.purgadell.grizzly.Worlds.DungeonWorld.Board.Handlers;
 
 import com.purgadell.grizzly.Resources.Variables;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.GameBoard;
+import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.Coordinates;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.PathFinder;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Helpers.TileGetter;
 import com.purgadell.grizzly.Worlds.DungeonWorld.Board.Tiles.Tile;
@@ -19,11 +20,9 @@ public class BoardMovementHandler {
 
     private boolean isMoving;
     private Entity movingEntity;
-    private Tile onTile;
     private Tile toTile;
     private LinkedList<Tile> entityPath;
 
-    private float timePassed = 0;
     private double traveledDistance = 0;
     private double tileDistance = 0;
 
@@ -42,24 +41,31 @@ public class BoardMovementHandler {
 
             if(toTile == null){
                 toTile = entityPath.pop();
+                System.out.println("Moving to " + toTile.getTileCoords().ToString() + " from " + movingEntity.getCoordinates().ToString());
             }
 
-            timePassed += dt;
-
-            if(timePassed > 1){
-                System.out.println("Moving to next tile " + entityPath.size() + " remain");
+            if(moveEntitySprite(dt)){
+                System.out.println("Move to next tile " + entityPath.size() + " remain");
                 movingEntity.placeOnTile(toTile);
-
-                onTile = toTile;
                 toTile = null;
-                timePassed = 0;
             }
         }
     }
 
+    private boolean moveEntitySprite(float dt){
+        float distTraveled = Variables.DIST_PER_SECOND * dt;
+
+        Coordinates entC = movingEntity.getCoordinates();
+        Coordinates endC = toTile.getTileCoords();
+
+        entC.position.move(distTraveled, endC.position);
+
+        movingEntity.setCoordinates(entC);
+        return entC.position.equals(endC.position);
+    }
+
     public void moveEntity(Entity e, Tile onTile, Tile toTile){
         this.movingEntity = e;
-        this.onTile = onTile;
         this.entityPath = PathFinder.getPath(gameBoard.getBoardTiles(), onTile, toTile, gameBoard.getTileGetter());
         System.out.println("Moving " + entityPath.size() + " tiles");
         this.isMoving = true;

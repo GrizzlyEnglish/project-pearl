@@ -67,10 +67,10 @@ public class TileGetter {
 
         for(int i = 1; i <= radius; i++){
             LinkedList<Coordinates> coordinates = borderAroundCoordinate(t.getTileCoords(), i);
-            System.out.println(t.getTileCoords().ToString() +  "  "  + coordinates.size());
+
             for(Coordinates c : coordinates){
                 int pos = getListPosition(c.coords.row, c.coords.column);
-                System.out.println(c.ToString() + "  " + pos);
+
                 Tile tmp = tiles.get(pos);
                 if(tmp != null && !(tmp instanceof VoidTile)) borderTiles.push(tmp);
             }

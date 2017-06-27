@@ -17,6 +17,39 @@ public class Coordinates {
             this.y = y;
         }
 
+        public void move(float dist, Position maxP){
+            System.out.println("Moving (" + this.x + "," + this.y + ") Amount: " + dist);
+            moveX(dist, maxP.x);
+            moveY(dist, maxP.y);
+            System.out.println("Moved to (" + this.x + "," + this.y + ")");
+        }
+
+        public void moveX(float dist, float max){
+            this.x = changeValue(this.x, dist, max);
+        }
+
+        private float changeValue(float val, float dist, float max){
+            boolean negative = val > max;
+            if(negative) val -= dist;
+            else val += dist;
+            return valPast(val, max, negative);
+        }
+
+        private float valPast(float val, float max, boolean negative){
+            if(negative && val < max){
+                val = max;
+            } else if(val > max) val = max;
+            return val;
+        }
+
+        public void moveY(float dist, float max){
+            this.y = changeValue(this.y, dist, max);
+        }
+
+        public boolean equals(Position p ){
+            return p.x == this.x && p.y == this.y;
+        }
+
         public double distance(Position p){
             return Coordinates.distance(x,y,p.x,p.y);
         }

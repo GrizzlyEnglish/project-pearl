@@ -67,7 +67,6 @@ public class BoardInputHandler {
 
             if(t != null){
                 Tile origin = highlighter.getSelectedTile();
-                System.out.println("Moving from " + origin.getTileCoords().ToString() + " to " + t.getTileCoords().ToString());
 
                 gameBoard.getBoardMovement().moveEntity(origin.getEntity(), origin, t);
 

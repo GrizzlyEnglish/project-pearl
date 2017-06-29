@@ -92,6 +92,12 @@ public abstract class Entity {
         this.sprite.setPosition(x,y);
     }
 
+    public boolean moveEntity(float dist, Coordinates.Position maxDist){
+        boolean completed = this.coordinates.position.move(dist, maxDist);
+        resetSpritePos();
+        return completed;
+    }
+
     public void placeOnTile(Tile t){
         onTile.removeTileEntity();
         onTile = t;

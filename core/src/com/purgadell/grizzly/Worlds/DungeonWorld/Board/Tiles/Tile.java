@@ -184,6 +184,10 @@ public abstract class Tile {
 
     public Coordinates getTileCoords() { return tileCoords; }
 
+    public Coordinates getEntityPlacementCoords(){
+        return new Coordinates(this.tileCoords.position.x, this.tileCoords.position.y + Variables.ENTITY_OFFSET);
+    }
+
     public int hueristicCots() { return 0; };
 
     public void setTileObstruction(Obstructions obs){

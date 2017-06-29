@@ -55,13 +55,9 @@ public class BoardMovementHandler {
     private boolean moveEntitySprite(float dt){
         float distTraveled = Variables.DIST_PER_SECOND * dt;
 
-        Coordinates entC = movingEntity.getCoordinates();
-        Coordinates endC = toTile.getTileCoords();
+        Coordinates endC = toTile.getEntityPlacementCoords();
 
-        entC.position.move(distTraveled, endC.position);
-
-        movingEntity.setCoordinates(entC);
-        return entC.position.equals(endC.position);
+        return movingEntity.moveEntity(distTraveled, endC.position);
     }
 
     public void moveEntity(Entity e, Tile onTile, Tile toTile){
